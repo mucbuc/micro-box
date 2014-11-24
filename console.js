@@ -3,23 +3,37 @@
 var repl = require( 'repl' )
   , emitStream = require( 'emit-stream' );
 
-function Console( controller ) {
-	repl.start( { 
-		eval: function( cmd, context, filename, callback ) {
-			controller.emit( 'command', cmd.slice( 1, -2 ) ); 
-			controller.once( 'exit', function( data ) {
-				callback( data.toString(), 0 ); 
-			} ); 
-		}
-	} );
+function readInput( req, res ) {
+	if (!req.length) {
+		repl.start( { 
+			eval: function( cmd, context, filename, callback ) {
+				res.controller.once( 'done', function() {
+					callback(null, 0);
+				});
+				res.controller.emit( 'command', cmd.slice( 1, -2 ) );
+				res.end();
+			}
+		} );
+	}
+	else {
+		res.end();
+	}
 }
 
 if (!module.parent) {
 	var events = require( 'events' )
-	  , Logic = require( './logic' )
-	  , emitter = emitStream( new events.EventEmitter() )
-	  , c = new Console( emitter )
-	  , l = new Logic( emitter ); 
+      , controller = new events.EventEmitter()
+	  , AppStack = require( 'app-stack' )
+	  , logger = require( './logger.js')
+	  , app = new AppStack( controller );
+
+	controller.on( 'command', function( cmd ) {
+		app.request( cmd );
+		controller.emit( 'done' );
+	} );
+
+	app.use( readInput );
+	app.use( /hey.*/, logger );
+	app.request( '' ); 
 }
-module.exports = Console; 
 
