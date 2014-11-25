@@ -16,12 +16,26 @@ function Stack(controller) {
   app.use( function(params, res) {
     if (!res.hasOwnProperty('purpose')) {
       execute(params, res);
+    } 
+    else {
+      res.end();
     }
   } ); 
 
   this.request = app.request;
 
+  registerHandlers();
   agent.process(['cd']);
+
+  function registerHandlers() {
+    controller.on( 'cwd', function(next) {
+      cwd = next;
+    });
+
+    controller.on( 'ls', function(list) {
+      context = list;
+    });
+  }
 
   function execute(params, res) {
     var args = res.argv.length > 1 ? res.argv.splice(1) : []
@@ -54,22 +68,8 @@ function Stack(controller) {
 
   function changeDir(params, res) {
     agent.process(res.argv, cwd);
-    
-    controller.once( 'cwd', function(next) {
-      cwd = next;
-      console.log( next );
-      done();
-    });
-
-    controller.once( 'ls', function(list) {
-      context = list;
-      done();
-    });
-
-    function done() {
-      res.purpose = 'cd';
-      res.end();
-    }
+    res.purpose = 'cd';
+    res.end();
   }
 }
 
