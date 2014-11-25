@@ -1,39 +1,52 @@
 #!/usr/bin/env node
 
 var repl = require( 'repl' )
+  , splitargs = require( 'splitargs' )
   , emitStream = require( 'emit-stream' );
 
-function readInput( req, res ) {
-	if (!req.length) {
-		repl.start( { 
-			eval: function( cmd, context, filename, callback ) {
-				res.controller.once( 'done', function() {
-					callback(null, 0);
-				});
-				res.controller.emit( 'command', cmd.slice( 1, -2 ) );
-				res.end();
-			}
-		} );
-	}
-	else {
-		res.end();
-	}
-}
-
 if (!module.parent) {
-	var events = require( 'events' )
-      , controller = new events.EventEmitter()
-	  , AppStack = require( 'app-stack' )
-	  , logger = require( './logger.js')
-	  , app = new AppStack( controller );
+  var events = require( 'events' )
+    , CD_Agent = require( 'cd-agent' )
+    , AppStack = require( 'app-stack' )
+    , logger = require( './logger.js')
+    , controller = new events.EventEmitter()
+    , app = new AppStack( controller )
+    , agent = new CD_Agent( controller )
+    , cwd = process.cwd()
+    , context = [];
 
-	controller.on( 'command', function( cmd ) {
-		app.request( cmd );
-		controller.emit( 'done' );
-	} );
+  controller.on( 'command', function( cmd ) {
+    app.request( cmd );
+    controller.emit( 'done' );
+  } );
 
-	app.use( readInput );
-	app.use( /hey.*/, logger );
-	app.request( '' ); 
+  app.use( split );
+  app.use( logger );
+  app.use( /cd\s+.*/, changeDir ); 
+
+  repl.start( { 
+    eval: function( cmd, context, filename, callback ) {
+      app.request( cmd.slice( 1, -2 ) );
+      callback(null, 0);
+    }
+  } );
+
+  function split(params, res) {
+    res.argv = splitargs(params);
+    res.end();
+  }
+
+  function changeDir(params, req) {
+    controller.once( 'cwd', function(next) {
+      cwd = next;
+      console.log( 'cwd: ', cwd );
+    });
+
+    controller.once( 'ls', function(list) {
+      context = list;
+    });
+
+    agent.process(req.argv, cwd);
+  }
 }
 
