@@ -8,15 +8,17 @@ if (!module.parent) {
     , controller = new events.EventEmitter()
     , stack = new Stack(controller);
 
-  controller.on( 'command', function( cmd ) {
-    stack.request( cmd );
-    controller.emit( 'done' );
-  } );
-
   repl.start( { 
     eval: function( cmd, context, filename, callback ) {
-      stack.request( cmd.slice( 1, -2 ) );
-      callback(null, 0);
+      var command = cmd.slice( 1, -2 );
+      if (command.length) {
+        stack.request( command, function(params, res) {
+          callback(0, null);
+        });
+      } 
+      else {
+        callback(0, null);
+      }
     }
   } );
 }

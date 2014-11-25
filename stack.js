@@ -14,30 +14,37 @@ function Stack(controller) {
   //app.use( logger );
   app.use( /cd\s+.*/, changeDir );
   app.use( function(params, res) {
-    if (!res.hasOwnProperty('purpose')) 
+    if (!res.hasOwnProperty('purpose')) {
       execute(params, res);
+    }
   } ); 
 
   this.request = app.request;
 
+  agent.process(['cd']);
+
   function execute(params, res) {
     var args = res.argv.length > 1 ? res.argv.splice(1) : []
       , child;
-    
+    res.end();
     process.stdin.pause(); 
     process.stdin.setRawMode( false );
 
     child = cp.spawn( 
       res.argv[0], 
       args, 
-      { stdio: 'inherit' } 
-    );  
-        // process.stdout.on( 'data', function( data ) {
-    //  controller.emit( 'data', data );
-    // } );
-    //child.stdout.pipe( controller );
-    //child.stdout.pipe( process.stdout );
-    //process.stdout.pause(); 
+      { 
+        stdio: 'inherit', 
+        cwd: cwd
+      } 
+    );
+
+    child.on( 'exit', function(code, signal) {
+      console.log( "code: ", code, "signal: ", signal );
+      process.stdin.resume();
+      process.stdin.setRawMode( true );
+      res.end();
+    }); 
   }
    
   function split(params, res) {
@@ -46,18 +53,23 @@ function Stack(controller) {
   }
 
   function changeDir(params, res) {
+    agent.process(res.argv, cwd);
+    
     controller.once( 'cwd', function(next) {
       cwd = next;
-      console.log( 'cwd: ', cwd );
+      console.log( next );
+      done();
     });
 
     controller.once( 'ls', function(list) {
       context = list;
+      done();
     });
 
-    agent.process(res.argv, cwd);
-    res.purpose = 'cd';
-    res.end();
+    function done() {
+      res.purpose = 'cd';
+      res.end();
+    }
   }
 }
 
