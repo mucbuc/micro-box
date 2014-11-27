@@ -1,7 +1,11 @@
-var cp = require( 'child_process' );
+var assert = require( 'assert' )
+  , cp = require( 'child_process' );
 
 function Logic( controller ) {
 	controller.on( 'command', function( data ) {
+		
+		assert( data[data.length - 1] != '\n' );
+
 		var cmd = data.toString().split( ' ' )
 		  , args = cmd.length > 1 ? cmd.splice(1) : [];
 

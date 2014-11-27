@@ -4,5 +4,12 @@
 		"app-stack": "*",
 		"cd-agent": "*", 
 		"splitargs": "*"
+	},
+	"devDependencies": {
+		"mocha": "*",
+		"readline-testharness": "*"
+	}, 
+	"scripts": {
+		"test": "mocha -u tdd --recursive"
 	}
 }
