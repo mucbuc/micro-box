@@ -1,5 +1,8 @@
 {
 	"dependencies": {
-		"emit-stream":"*"
+		"emit-stream":"*", 
+		"app-stack": "*",
+		"cd-agent": "*", 
+		"splitargs": "*"
 	}
 }

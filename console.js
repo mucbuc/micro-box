@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 
 var repl = require( 'repl' )
-  , emitStream = require( 'emit-stream' );
-
-function Console( controller ) {
-	repl.start( { 
-		eval: function( cmd, context, filename, callback ) {
-			controller.emit( 'command', cmd.slice( 1, -2 ) ); 
-			controller.once( 'exit', function( data ) {
-				callback( data.toString(), 0 ); 
-			} ); 
-		}
-	} );
-}
+  , Stack = require( './stack' );
 
 if (!module.parent) {
-	var events = require( 'events' )
-	  , Logic = require( './logic' )
-	  , emitter = emitStream( new events.EventEmitter() )
-	  , c = new Console( emitter )
-	  , l = new Logic( emitter ); 
+  var events = require( 'events' )
+    , controller = new events.EventEmitter()
+    , stack = new Stack(controller);
+
+  repl.start( { 
+    eval: function( cmd, context, filename, callback ) {
+      var command = cmd.slice( 1, -2 );
+      if (command.length) {
+        stack.request( command, function(params, res) {
+          callback(0, null);
+        });
+      } 
+      else {
+        callback(0, null);
+      }
+    }
+  } );
 }
-module.exports = Console; 
 
