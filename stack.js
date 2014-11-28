@@ -40,7 +40,6 @@ function Stack(controller) {
   function execute(params, res) {
     var args = res.argv.length > 1 ? res.argv.splice(1) : []
       , child;
-    res.end();
     process.stdin.pause(); 
     process.stdin.setRawMode( false );
 
