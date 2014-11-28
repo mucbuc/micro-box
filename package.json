@@ -1,15 +1,29 @@
 {
-	"dependencies": {
-		"emit-stream":"*", 
-		"app-stack": "*",
-		"cd-agent": "*", 
-		"splitargs": "*"
-	},
-	"devDependencies": {
-		"mocha": "*",
-		"readline-testharness": "*"
-	}, 
-	"scripts": {
-		"test": "mocha -u tdd --recursive"
-	}
+  "name": "micro-box",
+  "version": "0.0.0",
+  "description": "micro-box =========",
+  "main": "stack.js",
+  "dependencies": {
+    "emit-stream": "^0.1.2",
+    "app-stack": "^0.0.4",
+    "splitargs": "^0.0.3",
+    "readline-testharness": "^0.3.0",
+    "cd-agent": "^0.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mucbuc/micro-box.git"
+  },
+  "author": "mark busenitz",
+  "license": "GNU",
+  "bugs": {
+    "url": "https://github.com/mucbuc/micro-box/issues"
+  },
+  "homepage": "https://github.com/mucbuc/micro-box"
 }
