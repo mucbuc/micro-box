@@ -13,19 +13,27 @@ function Stack(controller) {
   this.request = app.request;
 
   function execute(req, res) {
-    var args = res.argv.length > 1 ? res.argv.splice(1) : []
+    var command = ''
+      , args = []
       , child;
+      
+    if (res.argv.length) {
+      command = res.argv[0];
+      if (res.argv.length > 1) {
+        args = res.argv.splice(1);
+      }
+    }
+
     process.stdin.pause(); 
     process.stdin.setRawMode( false );
 
     child = cp.spawn( 
-      res.argv[0], 
+      command, 
       args, 
       { 
         stdio: 'inherit',
         cwd: req.cwd
-      } 
-    );
+      });
 
     child.on( 'exit', function(code, signal) {
       console.log( "code: ", code, "signal: ", signal );
