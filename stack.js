@@ -1,43 +1,18 @@
-var CD_Agent = require( 'cd-agent' )
+var assert = require( 'assert' ) 
   , AppStack = require( 'app-stack' )
   , logger = require( './logger.js')
   , splitargs = require( 'splitargs' )
   , cp = require( 'child_process' );
 
 function Stack(controller) {
-  var app = new AppStack( controller )
-    , agent = new CD_Agent( controller )
-    , cwd = process.cwd()
-    , context = [];
+  var app = new AppStack( controller );
 
   app.use( split );
-  //app.use( logger );
-  app.use( /cd\s+.*/, changeDir );
-  app.use( function(params, res) {
-    if (!res.hasOwnProperty('purpose')) {
-      execute(params, res);
-    } 
-    else {
-      res.end();
-    }
-  } ); 
+  app.use( execute );
 
   this.request = app.request;
 
-  registerHandlers();
-  agent.process(['cd']);
-
-  function registerHandlers() {
-    controller.on( 'cwd', function(next) {
-      cwd = next;
-    });
-
-    controller.on( 'ls', function(list) {
-      context = list;
-    });
-  }
-
-  function execute(params, res) {
+  function execute(req, res) {
     var args = res.argv.length > 1 ? res.argv.splice(1) : []
       , child;
     process.stdin.pause(); 
@@ -46,10 +21,7 @@ function Stack(controller) {
     child = cp.spawn( 
       res.argv[0], 
       args, 
-      { 
-        stdio: 'inherit', 
-        cwd: cwd
-      } 
+      { stdio: 'inherit' } 
     );
 
     child.on( 'exit', function(code, signal) {
@@ -60,14 +32,9 @@ function Stack(controller) {
     }); 
   }
    
-  function split(params, res) {
-    res.argv = splitargs(params);
-    res.end();
-  }
-
-  function changeDir(params, res) {
-    agent.process(res.argv, cwd);
-    res.purpose = 'cd';
+  function split(req, res) {
+    assert( req.hasOwnProperty( 'params' ) );
+    res.argv = splitargs(req.params);
     res.end();
   }
 }

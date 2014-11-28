@@ -18,7 +18,6 @@ function Console( controller ) {
   });   
 
   controller.on( 'done', function() {
-    console.log( 'done' );
     repl.prompt();
   });
 
@@ -26,7 +25,7 @@ function Console( controller ) {
     if (typeof key !== 'undefined') {
       switch(key.name) {
         case 'tab': 
-        console.log( 'tab' );
+        controller.emit( 'autoComplete' );
         break;
       }  
     }
@@ -40,7 +39,7 @@ if (!module.parent) {
     , c = new Console(controller);
 
   controller.on( 'command', function( cmd ) {
-    stack.request( cmd, function(param, res) {
+    stack.request( { params: cmd }, function(req, res) {
       controller.emit( 'done' );
     });
   });
