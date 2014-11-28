@@ -1,6 +1,5 @@
 var assert = require( 'assert' ) 
   , AppStack = require( 'app-stack' )
-  , logger = require( './logger.js')
   , splitargs = require( 'splitargs' )
   , cp = require( 'child_process' )
   , config = require( './config.json' );
