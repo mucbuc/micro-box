@@ -1,0 +1,6 @@
+{
+	"sandbox": [".*"], 
+	"upload": true,
+	"username": "",
+	"password": ""
+}
