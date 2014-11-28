@@ -21,7 +21,10 @@ function Stack(controller) {
     child = cp.spawn( 
       res.argv[0], 
       args, 
-      { stdio: 'inherit' } 
+      { 
+        stdio: 'inherit',
+        cwd: req.cwd
+      } 
     );
 
     child.on( 'exit', function(code, signal) {

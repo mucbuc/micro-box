@@ -39,8 +39,11 @@ if (!module.parent) {
     , c = new Console(controller);
 
   controller.on( 'command', function( cmd ) {
-    stack.request( { params: cmd }, function(req, res) {
-      controller.emit( 'done' );
+    stack.request( { 
+      params: cmd, 
+      cwd: process.cwd()
+    }, function(req, res) {
+       controller.emit( 'done' );
     });
   });
 
