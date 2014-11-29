@@ -5,7 +5,7 @@
   "main": "stack.js",
   "dependencies": {
     "emit-stream": "^0.1.2",
-    "app-stack": "^0.0.4",
+    "app-stack": "*",
     "splitargs": "^0.0.3",
     "readline-testharness": "^0.3.0",
     "cd-agent": "^0.0.0"

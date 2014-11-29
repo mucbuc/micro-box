@@ -5,26 +5,45 @@ var assert = require( 'assert' )
   , config = require( './config.json' );
 
 function Stack(controller) {
-  var app = new AppStack( controller );
+  var app = new AppStack( controller )
+    , cd_agent = new CD_Agent( controller )
+    , cwd = process.cwd()
+    , context = [];
 
   app.use( split );
+  app.use( '/cd\s+.*/', changeDir );
   app.use( execute );
 
   this.request = app.request;
 
+  cd_agent.process(['cd']);
+
+  controller.on( 'cwd', function(next) {
+    cwd = next;
+  });
+
+  controller.on( 'ls', function(list) {
+    context = list;
+  });
+  
+  function changeDir(params, res) {
+    cd_agent.process(res.argv, cwd);
+    delete res.argv; 
+    res.end();
+  }
+
   function execute(req, res) {
     var command = ''
-      , args = []
+      , argv = []
       , child;
       
-    if (res.argv.length) {
+    if (res.hasOwnProperty('argv') && res.argv.length) {
       command = res.argv[0];
       if (res.argv.length > 1) {
-        args = res.argv.splice(1);
+        argv = res.argv.splice(1);
       }
+      filterCommand( command, spawn, block );
     }
-
-    filterCommand( command, spawn, block );
 
     function block() {
       var msg = "'" + command + "' is blocked\n"; 
@@ -33,15 +52,16 @@ function Stack(controller) {
     }
 
     function spawn() {
+
       process.stdin.pause(); 
       process.stdin.setRawMode( false );
 
       child = cp.spawn( 
         command, 
-        args, 
+        argv, 
         { 
           stdio: [ process.stdin, 'pipe', 'pipe' ],
-          cwd: req.cwd
+          cwd: cwd
         });
 
       res.controller.on( 'evaluate', write );
@@ -88,5 +108,7 @@ function Stack(controller) {
     res.end();
   }
 }
+
+Stack.prototype = new AppStack(); 
 
 module.exports = Stack; 
