@@ -5,7 +5,9 @@ var assert = require( 'assert' )
   , config = require( './config.json' );
 
 function Stack(controller) {
-  var app = new AppStack( controller );
+  var app = new AppStack( function() { 
+      return { controller: controller }; 
+    });
 
   app.use( split );
   app.use( execute );

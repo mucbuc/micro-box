@@ -1,14 +1,12 @@
 {
   "name": "micro-box",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "micro-box =========",
   "main": "stack.js",
   "dependencies": {
     "emit-stream": "^0.1.2",
-    "app-stack": "^0.0.4",
-    "splitargs": "^0.0.3",
-    "readline-testharness": "^0.3.0",
-    "cd-agent": "^0.0.0"
+    "app-stack": "*",
+    "splitargs": "^0.0.3"
   },
   "devDependencies": {
     "mocha": "^2.0.1"
