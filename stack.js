@@ -28,7 +28,7 @@ function Stack(controller) {
 
     function block() {
       var msg = "'" + command + "' is blocked\n"; 
-      controller.emit( 'feedback', msg );
+      res.controller.emit( 'feedback', msg );
       res.end();
     }
 
@@ -40,15 +40,22 @@ function Stack(controller) {
         command, 
         args, 
         { 
-          stdio: 'inherit',
+          stdio: [ process.stdin, 'pipe', 'pipe' ];
           cwd: req.cwd
         });
+      child.stdout.on( 'data', feedback ); 
+      child.stderr.on( 'data', feedback );
 
       child.once( 'exit', function(code, signal) {
         process.stdin.resume();
         process.stdin.setRawMode( true );
         res.end();
+        res.controller.emit( 'exit', code, signal );
       });
+
+      function feedback(data) {
+        res.controller.emit( 'feedback', data.toString() );
+      }
     }
 
     function filterCommand( command, pass, fail ) {
