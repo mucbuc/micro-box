@@ -40,7 +40,7 @@ function Stack(controller) {
         command, 
         args, 
         { 
-          stdio: [ process.stdin, 'pipe', 'pipe' ];
+          stdio: [ process.stdin, 'pipe', 'pipe' ],
           cwd: req.cwd
         });
       child.stdout.on( 'data', feedback ); 
