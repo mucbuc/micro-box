@@ -4,9 +4,11 @@
   "description": "micro-box =========",
   "main": "stack.js",
   "dependencies": {
-    "emit-stream": "^0.1.2",
+    "emit-stream": "*",
     "app-stack": "*",
-    "splitargs": "^0.0.3"
+    "splitargs": "*",
+    "readline-testharness": "^0.3.0",
+    "cd-agent": "*"
   },
   "devDependencies": {
     "mocha": "^2.0.1"
