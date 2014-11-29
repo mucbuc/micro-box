@@ -43,6 +43,10 @@ function Stack(controller) {
           stdio: [ process.stdin, 'pipe', 'pipe' ],
           cwd: req.cwd
         });
+
+      res.controller.on( 'evaluate', write );
+      res.controller.on( 'kill', kill );
+
       child.stdout.on( 'data', feedback ); 
       child.stderr.on( 'data', feedback );
 
@@ -52,6 +56,14 @@ function Stack(controller) {
         res.end();
         res.controller.emit( 'exit', code, signal );
       });
+
+      function kill() { 
+        child.kill();
+      }
+
+      function write(cwd, data) {
+        child.stdin.write( data.toString() + '\n' ); 
+      }
 
       function feedback(data) {
         res.controller.emit( 'feedback', data.toString() );
