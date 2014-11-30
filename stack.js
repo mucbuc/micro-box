@@ -2,37 +2,22 @@ var assert = require( 'assert' )
   , AppStack = require( 'app-stack' )
   , splitargs = require( 'splitargs' )
   , cp = require( 'child_process' )
-  , config = require( './config.json' );
+  , config = require( './config.json' )
+  , CDAgent = require( 'cd-agent' );
 
 function Stack(controller) {
   var app = new AppStack( function() { 
         return { controller: controller }; 
       } )
-    , cd_agent = new CD_Agent( controller )
-    , cwd = process.cwd()
-    , context = [];
+    , cd_agent = new CDAgent( controller );
 
   app.use( split );
-  app.use( '/cd\s+.*/', changeDir );
+  app.use( /cd\s+.*/, function(req, res) {
+    cd_agent.request(req, res);
+  } );
   app.use( execute );
 
   this.request = app.request;
-
-  cd_agent.process(['cd']);
-
-  controller.on( 'cwd', function(next) {
-    cwd = next;
-  });
-
-  controller.on( 'ls', function(list) {
-    context = list;
-  });
-  
-  function changeDir(params, res) {
-    cd_agent.process(res.argv, cwd);
-    delete res.argv; 
-    res.end();
-  }
 
   function execute(req, res) {
     var command = ''
@@ -45,6 +30,9 @@ function Stack(controller) {
         argv = res.argv.splice(1);
       }
       filterCommand( command, spawn, block );
+    }
+    else {
+      res.end();
     }
 
     function block() {
@@ -63,11 +51,11 @@ function Stack(controller) {
         argv, 
         { 
           stdio: [ process.stdin, 'pipe', 'pipe' ],
-          cwd: cwd
+          cwd: cd_agent.cwd
         });
 
-      res.controller.on( 'evaluate', write );
-      res.controller.on( 'kill', kill );
+      //res.controller.on( 'evaluate', write );
+      //res.controller.on( 'kill', kill );
 
       child.stdout.on( 'data', feedback ); 
       child.stderr.on( 'data', feedback );
