@@ -88,8 +88,6 @@ function Stack(controller) {
         res.controller.emit( 'feedback', data.toString() );
       }
     }
-
-    
   }
    
   function split(req, res) {
