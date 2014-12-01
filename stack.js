@@ -12,14 +12,29 @@ function Stack(controller) {
     , cd_agent = new CDAgent( controller );
 
   app.use( split );
-  app.use( /cd\s+.*/, function(req, res) {
-    cd_agent.request(req, res);
-  } );
+  app.use( /cd\s+.*/, cd_agent.request );
+  app.use( filter );
   app.use( execute );
 
   this.request = app.request;
 
+  function filter( req, res ) {
+    var tmp; 
+    for (var r in config.sandbox) {
+      var re = new RegExp( config.sandbox[r] );
+      if (re.test(req.params)) {
+        res.end();
+        return;
+      }
+    }
+    res.controller.emit( 'feedback', "'" + res.argv[0] + "' is blocked\n" );
+    delete res.argv;
+    res.end();
+  }
+
   function execute(req, res) {
+    
+
     var command = ''
       , argv = []
       , child;
@@ -29,15 +44,9 @@ function Stack(controller) {
       if (res.argv.length > 1) {
         argv = res.argv.splice(1);
       }
-      filterCommand( command, spawn, block );
+      spawn();
     }
     else {
-      res.end();
-    }
-
-    function block() {
-      var msg = "'" + command + "' is blocked\n"; 
-      res.controller.emit( 'feedback', msg );
       res.end();
     }
 
@@ -61,8 +70,8 @@ function Stack(controller) {
       child.stderr.on( 'data', feedback );
 
       child.once( 'exit', function(code, signal) {
-        process.stdin.resume();
-        process.stdin.setRawMode( true );
+        //process.stdin.resume();
+        //process.stdin.setRawMode( true );
         res.end();
         res.controller.emit( 'exit', code, signal );
       });
@@ -80,16 +89,7 @@ function Stack(controller) {
       }
     }
 
-    function filterCommand( command, pass, fail ) {
-      for (var r in config.sandbox) {
-        var re = new RegExp( config.sandbox[r] );
-        if (re.test( command )) {
-          pass();
-          return;
-        }
-      }
-      fail();
-    }
+    
   }
    
   function split(req, res) {
