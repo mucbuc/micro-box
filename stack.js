@@ -9,10 +9,16 @@ function Stack(controller) {
   var app = new AppStack( function() { 
         return { controller: controller }; 
       } )
-    , cd_agent = new CDAgent( controller );
+    , cd_agent = new CDAgent();
 
   app.use( split );
-  app.use( /cd\s+.*/, cd_agent.request );
+  app.use( /cd\s+.*/, function(req, res) {
+    cd_agent.eval( res.argv, function(cwd, list) {
+      console.log( cwd, list );
+      delete res.argv;
+      res.end(); 
+    });
+  });
   app.use( filter );
   app.use( execute );
 
@@ -33,7 +39,6 @@ function Stack(controller) {
   }
 
   function execute(req, res) {
-    
 
     var command = ''
       , argv = []
