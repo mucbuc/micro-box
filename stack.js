@@ -14,7 +14,6 @@ function Stack(controller) {
   app.use( split );
   app.use( /cd\s+.*/, function(req, res) {
     cd_agent.eval( res.argv, function(cwd, list) {
-      console.log( cwd, list );
       delete res.argv;
       res.end(); 
     });
@@ -75,8 +74,8 @@ function Stack(controller) {
       child.stderr.on( 'data', feedback );
 
       child.once( 'exit', function(code, signal) {
-        //process.stdin.resume();
-        //process.stdin.setRawMode( true );
+        process.stdin.resume();
+        process.stdin.setRawMode( true );
         res.end();
         res.controller.emit( 'exit', code, signal );
       });

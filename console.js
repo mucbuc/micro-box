@@ -10,11 +10,18 @@ function Console() {
 	});
 
 	rl.on( 'line', function(cmd) {
-		stack.request( { params: cmd } );
+		stack.request( { 
+			params: cmd 
+		}, 
+		read );
 	});
 
-	rl.prompt( 'mb> ' );
-	rl.resume();
+	read();
+
+	function read() {
+		rl.prompt( 'mb> ' );
+		rl.resume();
+	}
 }
 
 if (!module.parent) {
