@@ -9,17 +9,31 @@ function Stack(controller) {
   var app = new AppStack( function() { 
         return { controller: controller }; 
       } )
-    , cd_agent = new CDAgent();
+    , cd_agent = new CDAgent(); 
 
   app.use( split );
-  app.use( /cd\s+.*/, function(req, res) {
+  app.use( /cd\s*.*/, function(req, res) {
     cd_agent.eval( res.argv, function(cwd, list) {
       delete res.argv;
-      res.end(); 
+      if (typeof cwd !== 'undefined') {
+        res.cwd = cwd;
+      }
+      if (typeof list !== 'undefined') {
+        res.context = list;
+      }
+      res.end();
     });
   });
   app.use( filter );
   app.use( execute );
+
+  this.__defineSetter__( 'context', function(val){
+    cd_agent.context = val;
+  });
+  
+  this.__defineGetter__( 'context', function() {
+    return cd_agent.context;
+  });
 
   this.request = app.request;
 
