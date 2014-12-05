@@ -16,14 +16,6 @@ function Stack(controller) {
   app.use( filter );
   app.use( execute );
 
-  this.__defineSetter__( 'context', function(val){
-    cd_agent.context = val;
-  });
-  
-  this.__defineGetter__( 'context', function() {
-    return cd_agent.context;
-  });
-
   this.request = app.request;
 
   function execute(req, res) {
