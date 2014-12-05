@@ -12,18 +12,7 @@ function Stack(controller) {
     , cd_agent = new CDAgent(); 
 
   app.use( split );
-  app.use( /cd\s*.*/, function(req, res) {
-    cd_agent.eval( res.argv, function(cwd, list) {
-      delete res.argv;
-      if (typeof cwd !== 'undefined') {
-        res.cwd = cwd;
-      }
-      if (typeof list !== 'undefined') {
-        res.context = list;
-      }
-      res.end();
-    });
-  });
+  app.use( /cd\s*.*/, changeDir ); 
   app.use( filter );
   app.use( execute );
 
@@ -36,20 +25,6 @@ function Stack(controller) {
   });
 
   this.request = app.request;
-
-  function filter( req, res ) {
-    var tmp; 
-    for (var r in config.sandbox) {
-      var re = new RegExp( config.sandbox[r] );
-      if (re.test(req.params)) {
-        res.end();
-        return;
-      }
-    }
-    res.controller.emit( 'feedback', "'" + res.argv[0] + "' is blocked\n" );
-    delete res.argv;
-    res.end();
-  }
 
   function execute(req, res) {
 
@@ -107,7 +82,34 @@ function Stack(controller) {
       }
     }
   }
-   
+
+  function filter( req, res ) {
+    var tmp; 
+    for (var r in config.sandbox) {
+      var re = new RegExp( config.sandbox[r] );
+      if (re.test(req.params)) {
+        res.end();
+        return;
+      }
+    }
+    res.controller.emit( 'feedback', "'" + res.argv[0] + "' is blocked\n" );
+    delete res.argv;
+    res.end();
+  }
+
+  function changeDir(req, res) {
+    cd_agent.eval( res.argv, function(cwd, list) {
+      delete res.argv;
+      if (typeof cwd !== 'undefined') {
+        res.cwd = cwd;
+      }
+      if (typeof list !== 'undefined') {
+        res.context = list;
+      }
+      res.end();
+    });
+  }
+
   function split(req, res) {
     assert( req.hasOwnProperty( 'params' ) );
     res.argv = splitargs(req.params);
