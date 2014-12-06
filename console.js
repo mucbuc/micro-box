@@ -2,13 +2,16 @@
 
 var assert = require( 'assert' )
   , readline = require( 'readline' )
-  , Stack = require( './stack' );
+  , Stack = require( './stack' )
+  , events = require( 'events' );
 
 function Console() {
 
   var writer = process.stdout.write
     , outBuffer = ''
     , stack = new Stack( controller )
+    , ls_controller = new events.EventEmitter()
+    , ls_stack = new Stack( ls_controller )
     , context
     , cwd; 
 
@@ -44,7 +47,7 @@ function Console() {
             if (index === array.length - 1) {
               
               if (options.length === 1) {
-                cwd += options[0];
+                cwd += '/' + options[0];
               }
               callback(null, [options, end] );
             }
@@ -64,9 +67,6 @@ function Console() {
   });
 
   rl.on( 'line', function(cmd) {
-    
-    //console.log( outBuffer );
-
     stack.request( { 
       params: cmd 
     }, 
@@ -75,20 +75,18 @@ function Console() {
 
   process.stdin.on( 'keypress', function( ch, key ) {
     if (ch === '/') {
-      console.log( cwd );
-      // var lookAhead = 'node_modules' // outBuffer.substr( outBuffer.lastIndexOf( ' ' ) + 1, -1 )
-      //   , dir = cwd + '/' + lookAhead
-      //   , list = '';
+      
+      var list = '';
 
-      // controller.on( 'feedback', accum ); 
-      // stack.request( { params: 'ls ' + dir }, function(req, res) {
-      //   controller.removeListener( 'feedback', accum );
-      //   context = list.split( '\n' );
-      // } );
+      ls_controller.on( 'feedback', accum ); 
+      ls_stack.request( { params: 'ls ' + cwd }, function(req, res) {
+        ls_controller.removeListener( 'feedback', accum );
+        context = list.split( '\n' );
+      } );
 
-      // function accum( data ) {
-      //   list += data;
-      // }
+      function accum( data ) {
+        list += data;
+      }
     }
   });
 
