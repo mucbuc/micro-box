@@ -25,7 +25,19 @@ function Stack(controller) {
   };
 
   app.use( Layers.split );
-  app.use( /cd\s*.*/, function(req, res) {
+  app.use( Layers.filter );
+  app.use( /cd\s*.*/, changeDir ); 
+  app.use( setDir );
+  app.use( Layers.execute );
+
+  this.request = app.request;
+  
+  function setDir(req, res) {
+    req.cwd = currentWorkingDir; 
+    res.end();
+  }
+
+  function changeDir(req, res) {
     cdAgent({ 
         argv: req.argv,
         cwd: currentWorkingDir
@@ -43,15 +55,7 @@ function Stack(controller) {
         }
         res.end();
     });
-  }); 
-  app.use( Layers.filter );
-  app.use( function(req, res) {
-    req.cwd = currentWorkingDir; 
-    res.end();
-  });
-  app.use( Layers.execute );
-
-  this.request = app.request;
+  }
 }
 
 Stack.prototype = new AppStack(); 
