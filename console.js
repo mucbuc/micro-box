@@ -4,7 +4,10 @@ var assert = require( 'assert' )
   , readline = require( 'readline' )
   , Stack = require( './stack' )
   , events = require( 'events' )
-  , stream = require( 'stream' );
+  , stream = require( 'stream' )
+  , macros = require( './macros' );
+
+console.log( macros ); 
 
 function Console() {
 
@@ -12,7 +15,8 @@ function Console() {
     , outBuffer = ''
     , stack = new Stack( controller )
     , context
-    , cwd; 
+    , cwd
+    , inBuffer = '';
 
   stack.request( { params: 'cd' }, function(req, res) {
     if (res.hasOwnProperty('context')) {
@@ -58,7 +62,6 @@ function Console() {
       function getBeginIndex( command ) {
         var a = command.lastIndexOf( ' ' )
           , b = command.lastIndexOf( '/' );
-
           return b > a ? b : a;
         }
       }
@@ -72,16 +75,29 @@ function Console() {
   });
 
   process.stdin.on( 'keypress', function( ch, key ) {
+
+    if (typeof ch !== 'undefined') {
+      inBuffer += ch;
+    }
+
     if (ch === '/') {
       stack.readdir( cwd, function(cwd, list) {
         context = list;
       } );
+    }
+    if (typeof key !== 'undefined') {
+      if (key.name == 'right') {
+        if (macros.hasOwnProperty(inBuffer)) {
+          process.stdin.push( macros[inBuffer] );
+        }
+      }
     }
   });
 
   read();
 
   function read() {
+    inBuffer = '';
     rl.setPrompt( stack.cwd + '> ' );
     rl.prompt();
   }

@@ -24,14 +24,14 @@ function Stack(controller) {
       }, done );
   };
 
+  this.request = app.request;
+
   app.use( Layers.split );
   app.use( Layers.filter );
   app.use( /cd\s*.*/, changeDir ); 
-  app.use( setDir );
+  app.use( setDir ); 
   app.use( Layers.execute );
 
-  this.request = app.request;
-  
   function setDir(req, res) {
     req.cwd = currentWorkingDir; 
     res.end();
