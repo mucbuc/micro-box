@@ -3,15 +3,14 @@
 var assert = require( 'assert' )
   , readline = require( 'readline' )
   , Stack = require( './stack' )
-  , events = require( 'events' );
+  , events = require( 'events' )
+  , stream = require( 'stream' );
 
 function Console() {
 
   var writer = process.stdout.write
     , outBuffer = ''
     , stack = new Stack( controller )
-    , ls_controller = new events.EventEmitter()
-    , ls_stack = new Stack( ls_controller )
     , context
     , cwd; 
 
@@ -74,18 +73,9 @@ function Console() {
 
   process.stdin.on( 'keypress', function( ch, key ) {
     if (ch === '/') {
-      
-      var list = '';
-
-      ls_controller.on( 'feedback', accum ); 
-      ls_stack.request( { params: 'ls ' + cwd }, function(req, res) {
-        ls_controller.removeListener( 'feedback', accum );
-        context = list.split( '\n' );
+      stack.readdir( cwd, function(cwd, list) {
+        context = list;
       } );
-
-      function accum( data ) {
-        list += data;
-      }
     }
   });
 

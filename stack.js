@@ -17,6 +17,13 @@ function Stack(controller) {
     return currentWorkingDir;
   });
 
+  this.readdir = function(dir, done) {
+    cdAgent({ 
+        argv: ['cd'], 
+        cwd: dir 
+      }, done );
+  };
+
   app.use( Layers.split );
   app.use( /cd\s*.*/, function(req, res) {
     cdAgent({ 

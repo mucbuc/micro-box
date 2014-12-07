@@ -40,18 +40,6 @@ var Layers = {
         res.end();
         res.controller.emit( 'exit', code, signal );
       });
-
-      function kill() { 
-        child.kill();
-      }
-
-      function write(cwd, data) {
-        child.stdin.write( data.toString() + '\n' ); 
-      }
-
-      function feedback(data) {
-        res.controller.emit( 'feedback', data.toString() );
-      }
     }
   },
 
@@ -64,7 +52,7 @@ var Layers = {
         return;
       }
     }
-    res.controller.emit( 'feedback', "'" + req.argv[0] + "' is blocked\n" );
+    process.stdout.write( "'" + req.argv[0] + "' is blocked\n" ); 
     delete req.argv;
     res.end();
   },
