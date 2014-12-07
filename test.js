@@ -10,10 +10,6 @@ suite( 'micro-box', function() {
 		var controller = new events.EventEmitter()
 		  , stack = new Stack(controller);
 
-		controller.on( 'feedback', function(txt){
-			console.log(txt);
-		});
-
 		stack.request( { params: 'ls' } );
 		
 	});

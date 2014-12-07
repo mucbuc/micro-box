@@ -91,10 +91,6 @@ if (!module.parent) {
   var events = require( 'events' )
     , controller = new events.EventEmitter()
     , c = new Console( controller );
-
-  controller.on( 'feedback', function(msg) {
-    console.log( msg );
-  });
 }
 
 module.exports = Console; 
