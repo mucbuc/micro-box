@@ -30,15 +30,9 @@ var Layers = {
         command, 
         argv, 
         { 
-          stdio: [ process.stdin, 'pipe', 'pipe' ],
+          stdio: 'inherit',
           cwd: req.cwd
         });
-
-      //res.controller.on( 'evaluate', write );
-      //res.controller.on( 'kill', kill );
-
-      child.stdout.on( 'data', feedback ); 
-      child.stderr.on( 'data', feedback );
 
       child.once( 'exit', function(code, signal) {
         process.stdin.resume();

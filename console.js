@@ -36,7 +36,6 @@ function Console() {
 
       var options = []
         , ind = getBeginIndex( outBuffer )
-        , options = []
         , end = outBuffer.substr( ind + 1 );
 
       context.forEach( function( e, index, array ) {
