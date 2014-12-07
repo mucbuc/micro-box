@@ -29,8 +29,10 @@ function Stack(controller) {
   app.use( Layers.split );
   app.use( Layers.filter );
   app.use( /cd\s*.*/, changeDir ); 
-  app.use( setDir ); 
+  app.use( setDir );
+  app.use( Layers.nRepeater ); 
   app.use( Layers.execute );
+
 
   function setDir(req, res) {
     req.cwd = currentWorkingDir; 

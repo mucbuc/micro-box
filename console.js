@@ -15,7 +15,8 @@ function Console() {
     , outBuffer = ''
     , stack = new Stack( controller )
     , context
-    , cwd;
+    , cwd
+    , repeat = '';
 
   stack.request( { params: 'cd' }, function(req, res) {
     if (res.hasOwnProperty('context')) {
@@ -68,7 +69,7 @@ function Console() {
 
   rl.on( 'line', function(cmd) {
     stack.request( { 
-      params: cmd 
+      params: repeat + cmd 
     }, 
     read );
   });
@@ -91,9 +92,17 @@ function Console() {
 
   read();
 
-  function read() {
-    rl.setPrompt( stack.cwd + '> ' );
-    rl.prompt();
+  function read(req, res) {
+    var base = stack.cwd + '> ';
+
+    if (typeof res !== 'undefined' && res.hasOwnProperty('repeat')) {
+      
+      rl.write( res.repeat );
+      readline.moveCursor( process.stdout, res.repeat.length, 0 );
+    }
+    
+    rl.setPrompt( base );  
+    rl.prompt([true]);
     outBuffer = '';
   }
 }

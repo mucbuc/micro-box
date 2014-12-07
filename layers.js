@@ -1,9 +1,36 @@
 var assert = require( 'assert' ) 
   , config = require( './config.json' )
   , splitargs = require( 'splitargs' )
-  , cp = require( 'child_process' );
+  , cp = require( 'child_process' )
+  , previous = ''
+  , repeaterEnd = 0;
 
-var Layers = { 
+var Layers = {
+
+  nRepeater: function(req, res) { 
+    
+    if (previous.length) {
+      var d = findDiff(previous, req.params);
+      if (d > 0) {
+        res.repeat = previous.substr(0, d);
+      }
+    }
+    previous = req.params;
+    
+    res.end();
+
+    function findDiff(lhs, rhs) {
+      var index = 0;
+      while (   index < rhs.length 
+            &&  index < lhs.length
+            &&  rhs.charAt(index) == lhs.charAt(index)) 
+      {
+        ++index;
+      }
+      return index;
+    } 
+  },
+
   execute: function(req, res) {
 
     var command = ''
@@ -26,7 +53,7 @@ var Layers = {
       process.stdin.pause(); 
       process.stdin.setRawMode( false );
 
-      child = cp.spawn( 
+      child = cp.spawn(
         command, 
         argv, 
         { 
