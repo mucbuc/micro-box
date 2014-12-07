@@ -1,0 +1,4 @@
+{
+	"ls": " -la",
+	"git s": "tatus -sb"
+}

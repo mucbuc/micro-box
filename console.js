@@ -15,8 +15,7 @@ function Console() {
     , outBuffer = ''
     , stack = new Stack( controller )
     , context
-    , cwd
-    , inBuffer = '';
+    , cwd;
 
   stack.request( { params: 'cd' }, function(req, res) {
     if (res.hasOwnProperty('context')) {
@@ -76,10 +75,6 @@ function Console() {
 
   process.stdin.on( 'keypress', function( ch, key ) {
 
-    if (typeof ch !== 'undefined') {
-      inBuffer += ch;
-    }
-
     if (ch === '/') {
       stack.readdir( cwd, function(cwd, list) {
         context = list;
@@ -87,8 +82,8 @@ function Console() {
     }
     if (typeof key !== 'undefined') {
       if (key.name == 'right') {
-        if (macros.hasOwnProperty(inBuffer)) {
-          process.stdin.push( macros[inBuffer] );
+        if (macros.hasOwnProperty(outBuffer)) {
+          process.stdin.push( macros[outBuffer] );
         }
       }
     }
@@ -97,9 +92,9 @@ function Console() {
   read();
 
   function read() {
-    inBuffer = '';
     rl.setPrompt( stack.cwd + '> ' );
     rl.prompt();
+    outBuffer = '';
   }
 }
 
