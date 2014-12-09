@@ -94,16 +94,16 @@ function Console() {
 
   function read(req, res) {
     var base = stack.cwd + '> ';
-
-    if (typeof res !== 'undefined' && res.hasOwnProperty('repeat')) {
-      
-      rl.write( res.repeat );
-      readline.moveCursor( process.stdout, res.repeat.length, 0 );
-    }
+    rl.setPrompt( base );
+    rl.prompt(); 
     
-    rl.setPrompt( base );  
-    rl.prompt([true]);
-    outBuffer = '';
+    if (typeof res !== 'undefined' && res.hasOwnProperty('repeat')) {
+      rl.write( res.repeat );
+      outBuffer = res.repeat;
+    }
+    else {
+      outBuffer = '';
+    }
   }
 }
 
