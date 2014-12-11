@@ -5,14 +5,14 @@ var assert = require( 'assert' )
   , Stack = require( './stack' )
   , events = require( 'events' )
   , stream = require( 'stream' )
-  , macros = require( './macros' );
+  , macros = require( './macros' )
+  , fs = require( 'fs' );
 
 console.log( macros ); 
 
 function Console() {
 
   var writer = process.stdout.write
-    , outBuffer = ''
     , stack = new Stack( controller )
     , context
     , cwd
@@ -24,41 +24,49 @@ function Console() {
       cwd = res.cwd;
     }
   } );
-  
-  process.stdout.write = function() {
-    outBuffer += arguments[0].toString();
-    return writer.apply(this, arguments); 
-  };
 
   var rl = readline.createInterface( { 
     input: process.stdin, 
     output: process.stdout,
     completer: function(partial, callback) {
-      
-      assert( outBuffer.length ); 
 
-      var options = []
-        , ind = getBeginIndex( outBuffer )
-        , end = outBuffer.substr( ind + 1 );
+      assert( partial.length ); 
 
-      context.forEach( function( e, index, array ) {
-            if (e.indexOf(end) == 0) {
-              options.push( e );
-            }
-
-            if (index === array.length - 1) {
-              
-              if (options.length === 1) {
-                cwd += '/' + options[0];
-              }
-              callback(null, [options, end] );
-            }
-      } );
+      for(var property in macros) {
+        var macro = macros[property];
+        if (!partial.indexOf(property)) { 
+          callback(null, [ [property + macro ], partial ] );
+        }
+      }
 
       if (!context.length) {
         callback(null, [[], end] );
       }
-      
+      else {
+        searchContext();
+      } 
+
+      function searchContext() {
+
+        var options = []
+          , ind = getBeginIndex( partial )
+          , end = partial.substr( ind + 1 );
+
+        context.forEach( function( e, index, array ) {
+              if (e.indexOf(end) == 0) {
+                options.push( e );
+              }
+
+              if (index === array.length - 1) {
+                
+                if (options.length === 1) {
+                  cwd += '/' + options[0];
+                }
+                callback(null, [options, end] );
+              }
+        } );
+      }
+
       function getBeginIndex( command ) {
         var a = command.lastIndexOf( ' ' )
           , b = command.lastIndexOf( '/' );
@@ -81,13 +89,8 @@ function Console() {
         context = list;
       } );
     }
-    if (typeof key !== 'undefined') {
-      if (key.name == 'right') {
-        if (macros.hasOwnProperty(outBuffer)) {
-          process.stdin.push( macros[outBuffer] );
-        }
-      }
-    }
+    // if (typeof key !== 'undefined') {
+    // }
   });
 
   read();
@@ -95,14 +98,10 @@ function Console() {
   function read(req, res) {
     var base = stack.cwd + '> ';
     rl.setPrompt( base );
-    rl.prompt(); 
-    
+    rl.prompt();
+
     if (typeof res !== 'undefined' && res.hasOwnProperty('repeat')) {
       rl.write( res.repeat );
-      outBuffer = res.repeat;
-    }
-    else {
-      outBuffer = '';
     }
   }
 }
