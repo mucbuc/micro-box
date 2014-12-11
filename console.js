@@ -30,12 +30,15 @@ function Console() {
     output: process.stdout,
     completer: function(partial, callback) {
 
+      var done = false;
+
       assert( partial.length ); 
 
       for(var property in macros) {
         var macro = macros[property];
         if (!partial.indexOf(property)) { 
-          callback(null, [ [property + macro ], partial ] );
+          callback(null, [ [property + macro], partial ] );
+          return;
         }
       }
 
@@ -53,17 +56,17 @@ function Console() {
           , end = partial.substr( ind + 1 );
 
         context.forEach( function( e, index, array ) {
-              if (e.indexOf(end) == 0) {
-                options.push( e );
-              }
+          if (e.indexOf(end) == 0) {
+            options.push( e );
+          }
 
-              if (index === array.length - 1) {
-                
-                if (options.length === 1) {
-                  cwd += '/' + options[0];
-                }
-                callback(null, [options, end] );
-              }
+          if (index === array.length - 1) {
+            
+            if (options.length === 1) {
+              cwd += '/' + options[0];
+            }
+            callback(null, [options, end] );
+          }
         } );
       }
 
@@ -89,8 +92,6 @@ function Console() {
         context = list;
       } );
     }
-    // if (typeof key !== 'undefined') {
-    // }
   });
 
   read();
