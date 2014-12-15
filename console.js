@@ -5,22 +5,20 @@ var assert = require( 'assert' )
   , Stack = require( './stack' )
   , events = require( 'events' )
   , stream = require( 'stream' )
-  , macros = require( './macros' )
-  , fs = require( 'fs' );
-
-console.log( macros ); 
+  , fs = require( 'fs' )
+  , Completer = require( './completer' );
 
 function Console() {
 
   var stack = new Stack( controller )
-    , context
+    , completer = new Completer()
     , cwd
     , rl
     , repeat = '';
 
   stack.request( { params: 'cd' }, function(req, res) {
     if (res.hasOwnProperty('context')) {
-      context = res.context; 
+      completer.context = res.context; 
       cwd = res.cwd;
     }
   } );
@@ -28,8 +26,8 @@ function Console() {
   rl = readline.createInterface( { 
     input: process.stdin, 
     output: process.stdout,
-    completer: complete
-  );
+    completer: completer.complete
+  } );
 
   rl.on( 'line', function(cmd) {
     stack.request( { 
@@ -41,7 +39,7 @@ function Console() {
   process.stdin.on( 'keypress', function( ch, key ) {
     if (ch === '/') {
       stack.readdir( cwd, function(cwd, list) {
-        context = list;
+        completer.context = list;
       } );
     }
   });
@@ -57,56 +55,6 @@ function Console() {
       rl.write( res.repeat );
     }
   }
-
-  function complete(partial, callback) {
-
-    var done = false;
-    assert( partial.length ); 
-
-    for(var property in macros) {
-      var macro = macros[property];
-      if (!partial.indexOf(property)) { 
-        callback(null, [ [property + macro], partial ] );
-        return;
-      }
-    }
-
-    if (!context.length) {
-      callback(null, [[], end] );
-    }
-    else {
-      searchContext();
-    } 
-
-    function searchContext() {
-
-      var options = []
-        , ind = getBeginIndex( partial )
-        , end = partial.substr( ind + 1 );
-
-      context.forEach( function( e, index, array ) {
-        if (e.indexOf(end) == 0) {
-          options.push( e );
-        }
-
-        if (index === array.length - 1) {
-          
-          if (options.length === 1) {
-            cwd += '/' + options[0];
-          }
-          callback(null, [options, end] );
-        }
-      } );
-    }
-
-    function getBeginIndex( command ) {
-      var a = command.lastIndexOf( ' ' )
-        , b = command.lastIndexOf( '/' );
-        return b > a ? b : a;
-      }
-    }
-  }
-
 }
 
 if (!module.parent) {
