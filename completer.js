@@ -1,4 +1,5 @@
-var macros = require( './macros' );
+var assert = require( 'assert' )
+  , macros = require( './macros' );
 
 function Completer() {
 
@@ -13,14 +14,21 @@ function Completer() {
   }); 
 
   this.complete = function(partial, callback) {
-    
-    // wonder if this belong in separate layer
+    var subContext = [];
     for(var property in macros) {
       var macro = macros[property];
       if (!partial.indexOf(property)) { 
         callback(null, [ [property + macro], partial ] );
         return;
       }
+      else if (!property.indexOf(partial)) {
+        subContext.push( property + macro );
+      }
+    }
+
+    if (subContext.length) {
+      callback(null, [ subContext, "git" ]);
+      return;
     }
 
     if (!context.length) {
