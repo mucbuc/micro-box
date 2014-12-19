@@ -3,51 +3,15 @@ var assert = require( 'assert' )
   , splitargs = require( 'splitargs' )
   , cp = require( 'child_process' )
   , NRepeater = require( './layers/nrepeater.js' )
+  , Executer = require( './layers/executer.js' )
   , repeaterEnd = 0
-  , nrep = new NRepeater();
+  , nrep = new NRepeater()
+  , exe = new Executer(); 
 
 var Layers = {
 
   nRepeater: nrep.handle, 
-
-  execute: function(req, res) {
-
-    var command = ''
-      , argv = []
-      , child;
-      
-    if (req.hasOwnProperty('argv') && req.argv.length) {
-      command = req.argv[0];
-      if (req.argv.length > 1) {
-        argv = req.argv.splice(1);
-      }
-      spawn();
-    }
-    else {
-      res.end();
-    }
-
-    function spawn() {
-
-      process.stdin.pause(); 
-      process.stdin.setRawMode( false );
-
-      child = cp.spawn(
-        command, 
-        argv, 
-        { 
-          stdio: 'inherit',
-          cwd: req.cwd
-        });
-
-      child.once( 'exit', function(code, signal) {
-        process.stdin.resume();
-        process.stdin.setRawMode( true );
-        res.end();
-        res.controller.emit( 'exit', code, signal );
-      });
-    }
-  },
+  execute: exe.handle,
 
   filter: function( req, res ) {
     var tmp; 
