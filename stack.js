@@ -56,7 +56,7 @@ function Stack(controller) {
           context = list;
         }
         res.end();
-    });
+      });
   }
 }
 

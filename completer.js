@@ -52,10 +52,6 @@ function Completer() {
         }
 
         if (index === array.length - 1) {
-          
-          if (options.length === 1) {
-            cwd += '/' + options[0];
-          }
           callback(null, [options, end] );
         }
       } );
