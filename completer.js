@@ -19,7 +19,8 @@ function Completer() {
     }
     
     if (context.length) {
-      callback(null, [ context, "git" ]);
+      console.log( 'context: ', context );
+      callback(null, [ context, partial ]);
       return;
     }
     
