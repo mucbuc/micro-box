@@ -1,19 +1,16 @@
 var assert = require( 'assert' )
-  , macros = require( './macros' );
+  , macros = require( './macros' )
+  , fs = require( 'fs' )
+  , path = require( 'path' );
 
 function Completer() {
 
-  var conext; 
-
-  this.__defineGetter__('context', function() {
-    return context;
-  });
-
-  this.__defineSetter__('context', function(val) {
-    context = val;
-  }); 
-
   this.complete = function(partial, callback) {
+    autoComplete(partial, callback); 
+  };
+
+  function autoComplete(partial, callback) {
+
     var subContext = [];
     for(var property in macros) {
       var macro = macros[property];
@@ -31,38 +28,51 @@ function Completer() {
       return;
     }
 
-    if (!context.length) {
-      callback(null, [[], end] );
-    }
-    else {
+    // if (!context.length) {
+    //   callback(null, [[], end] );
+    // }
+    // else {
       searchContext();
-    } 
+    //} 
 
     function searchContext() {
 
-      var options = []
-        , ind = getBeginIndex( partial )
-        , end = partial.substr( ind + 1 );
+      var lookAheadDir = process.cwd()
+        , separatorIndex = partial.lastIndexOf( '/' )
+        , spaceIndex = partial.lastIndexOf( ' ' )
+        , rel;
 
       assert( partial.length ); 
 
-      context.forEach( function( e, index, array ) {
-        if (e.indexOf(end) == 0) {
-          options.push( e );
-        }
+      if (    separatorIndex != -1 
+          &&  separatorIndex > spaceIndex) {
+        var t = partial.substr(spaceIndex + 1, separatorIndex - spaceIndex);
+        lookAheadDir = path.join( lookAheadDir, t );
+        rel = partial.substr( separatorIndex + 1);
+      }
+      else {
+        rel = partial.substr( spaceIndex + 1);
+      }
+      
+      // console.log( "lookAheadDir:", lookAheadDir );
+      // console.log( "rel:", rel );
 
-        if (index === array.length - 1) {
-          callback(null, [options, end] );
-        }
-      } );
-    }
+      fs.readdir( lookAheadDir, function( err, files ) {
+        var options = [];
 
-    function getBeginIndex( command ) {
-      var a = command.lastIndexOf( ' ' )
-        , b = command.lastIndexOf( '/' );
-      return b > a ? b : a;
+        if (err) throw err;
+        files.forEach( function( e, index, array ) {
+          if (e.indexOf(rel) == 0) {
+            options.push( e );
+          }
+
+          if (index === array.length - 1) {
+            callback(null, [options, rel] );
+          }
+        } );
+      }); 
     }
-  };
+  }
 }
 
 module.exports = Completer;

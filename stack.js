@@ -14,12 +14,7 @@ function Stack(controller) {
     , executer = new Executer()
     , filter = new Filter()
     , splitter = new Splitter()
-    , cwdManger = new CWDManger()
-    , context = [];
-
-  this.__defineGetter__('context', function() {
-    return context;
-  });
+    , cwdManger = new CWDManger();
 
   this.__defineGetter__('cwd', function() { 
     return process.cwd();

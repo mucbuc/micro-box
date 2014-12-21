@@ -12,16 +12,9 @@ function Console() {
 
   var stack = new Stack( controller )
     , completer = new Completer()
-    , cwd
+    , cwd = process.cwd()
     , rl
     , repeat = '';
-
-  stack.request( { params: 'cd' }, function(req, res) {
-    if (res.hasOwnProperty('context')) {
-      completer.context = res.context; 
-      cwd = res.cwd;
-    }
-  } );
 
   rl = readline.createInterface( { 
     input: process.stdin, 
@@ -38,16 +31,17 @@ function Console() {
 
   process.stdin.on( 'keypress', function( ch, key ) {
     if (ch === '/') {
-      stack.readdir( cwd, function(cwd, list) {
-        completer.context = list;
-      } );
+      fs.readdir( cwd, function(err, files) {
+        if (err) throw err;
+        completer.context = files;
+      });
     }
   });
 
   read();
 
   function read(req, res) {
-    var base = stack.cwd + '> ';
+    var base = process.cwd() + '> ';
     rl.setPrompt( base );
     rl.prompt();
 
