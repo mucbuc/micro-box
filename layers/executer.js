@@ -32,12 +32,19 @@ function Executer() {
           cwd: req.cwd
         });
 
-      child.once( 'exit', function(code, signal) {
+      child.on( 'error', function(err) {
+        console.log( err );
+        exit(err.code)
+      });
+
+      child.once( 'exit', exit );
+     
+      function exit(code, signal) {
         process.stdin.resume();
         process.stdin.setRawMode( true );
         res.end();
         res.controller.emit( 'exit', code, signal );
-      });
+      }
     }
   };
 }

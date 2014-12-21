@@ -1,11 +1,18 @@
 var AppStack = require( 'app-stack' )
-  , cdAgent = require( 'cd-agent' )
-  , Layers = require( './layers' );
+  , cdAgent = require( 'cd-agent' )  
+  , NRepeater = require( './layers/nrepeater.js' )
+  , Executer = require( './layers/executer.js' )
+  , Filter = require( './layers/filter.js' )
+  , Splitter = require( './layers/splitter.js' );
 
 function Stack(controller) {
   var app = new AppStack( function() { 
         return { controller: controller }; 
       } )
+    , nRepeater = new NRepeater()
+    , executer = new Executer()
+    , filter = new Filter()
+    , splitter = new Splitter()  
     , currentWorkingDir = process.cwd()
     , context = [];
 
@@ -26,13 +33,12 @@ function Stack(controller) {
 
   this.request = app.request;
 
-  app.use( Layers.split );
-  app.use( Layers.filter );
+  app.use( splitter.handle );
+  app.use( filter.handle );
   app.use( /cd\s*.*/, changeDir ); 
   app.use( setDir );
-  app.use( Layers.nRepeater ); 
-  app.use( Layers.execute );
-
+  app.use( nRepeater.handle ); 
+  app.use( executer.handle );
 
   function setDir(req, res) {
     req.cwd = currentWorkingDir; 

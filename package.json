@@ -7,7 +7,6 @@
     "emit-stream": "*",
     "app-stack": "*",
     "splitargs": "*",
-    "readline-testharness": "^0.3.0",
     "cd-agent": "*"
   },
   "devDependencies": {
