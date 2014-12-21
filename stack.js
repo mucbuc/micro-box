@@ -3,7 +3,8 @@ var AppStack = require( 'app-stack' )
   , NRepeater = require( './layers/nrepeater.js' )
   , Executer = require( './layers/executer.js' )
   , Filter = require( './layers/filter.js' )
-  , Splitter = require( './layers/splitter.js' );
+  , Splitter = require( './layers/splitter.js' )
+  , CWDManger = require( './layers/cwd.js' );
 
 function Stack(controller) {
   var app = new AppStack( function() { 
@@ -12,8 +13,8 @@ function Stack(controller) {
     , nRepeater = new NRepeater()
     , executer = new Executer()
     , filter = new Filter()
-    , splitter = new Splitter()  
-    , currentWorkingDir = process.cwd()
+    , splitter = new Splitter()
+    , cwdManger = new CWDManger()
     , context = [];
 
   this.__defineGetter__('context', function() {
@@ -21,7 +22,7 @@ function Stack(controller) {
   });
 
   this.__defineGetter__('cwd', function() { 
-    return currentWorkingDir;
+    return process.cwd();
   });
 
   this.readdir = function(dir, done) {
@@ -35,35 +36,9 @@ function Stack(controller) {
 
   app.use( splitter.handle );
   app.use( filter.handle );
-  app.use( /cd\s*.*/, changeDir ); 
-  app.use( setDir );
+  app.use( /cd\s*.*/,cwdManger.changeDir );
   app.use( nRepeater.handle ); 
   app.use( executer.handle );
-
-  function setDir(req, res) {
-    req.cwd = currentWorkingDir; 
-    res.end();
-  }
-
-  function changeDir(req, res) {
-    cdAgent({ 
-        argv: req.argv,
-        cwd: currentWorkingDir
-      }, 
-      function(cwd, list) {
-        delete req.argv;
-        
-        if (typeof cwd !== 'undefined') {
-          res.cwd = cwd;
-          currentWorkingDir = cwd;
-        }
-        if (typeof list !== 'undefined') {
-          res.context = list;
-          context = list;
-        }
-        res.end();
-      });
-  }
 }
 
 Stack.prototype = new AppStack(); 
