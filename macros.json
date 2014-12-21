@@ -2,5 +2,6 @@
 	"ls": " -la",
 	"git s": "tatus -sb",
 	"git d": "iff --word-diff",
-	"git l": "og -p"
+	"git l": "og -p",
+	"git c": "ommit -am"
 }
