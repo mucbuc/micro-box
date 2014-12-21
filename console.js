@@ -20,22 +20,13 @@ function Console() {
     input: process.stdin, 
     output: process.stdout,
     completer: completer.complete
-  } );
+  });
 
   rl.on( 'line', function(cmd) {
     stack.request( { 
       params: repeat + cmd 
     }, 
     read );
-  });
-
-  process.stdin.on( 'keypress', function( ch, key ) {
-    if (ch === '/') {
-      fs.readdir( cwd, function(err, files) {
-        if (err) throw err;
-        completer.context = files;
-      });
-    }
   });
 
   read();

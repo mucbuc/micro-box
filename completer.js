@@ -19,7 +19,6 @@ function Completer() {
     }
     
     if (context.length) {
-      console.log( 'context: ', context );
       callback(null, [ context, partial ]);
       return;
     }
