@@ -59,8 +59,12 @@ function Completer() {
 
       fs.readdir( lookAheadDir, function( err, files ) {
         var options = [];
-
         if (err) throw err;
+        if (!files.length) {
+          callback(null, [[], rel] );
+          return;
+        }
+
         files.forEach( function( e, index, array ) {
           if (e.indexOf(rel) == 0) {
             options.push( e );
