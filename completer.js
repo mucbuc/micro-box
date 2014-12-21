@@ -6,12 +6,7 @@ var assert = require( 'assert' )
 function Completer() {
 
   this.complete = function(partial, callback) {
-    autoComplete(partial, callback); 
-  };
-
-  function autoComplete(partial, callback) {
-
-    var subContext = [];
+    var context = [];
     for(var property in macros) {
       var macro = macros[property];
       if (!partial.indexOf(property)) { 
@@ -19,23 +14,17 @@ function Completer() {
         return;
       }
       else if (!property.indexOf(partial)) {
-        subContext.push( property + macro );
+        context.push( property + macro );
       }
     }
-
-    if (subContext.length) {
-      callback(null, [ subContext, "git" ]);
+    
+    if (context.length) {
+      callback(null, [ context, "git" ]);
       return;
     }
-
-    // if (!context.length) {
-    //   callback(null, [[], end] );
-    // }
-    // else {
-      searchContext();
-    //} 
-
-    function searchContext() {
+    
+    searchPath();
+    function searchPath() {
 
       var lookAheadDir = process.cwd()
         , separatorIndex = partial.lastIndexOf( '/' )
@@ -54,9 +43,6 @@ function Completer() {
         rel = partial.substr( spaceIndex + 1);
       }
       
-      // console.log( "lookAheadDir:", lookAheadDir );
-      // console.log( "rel:", rel );
-
       fs.readdir( lookAheadDir, function( err, files ) {
         var options = [];
         if (err) throw err;
@@ -76,7 +62,7 @@ function Completer() {
         } );
       }); 
     }
-  }
+  };
 }
 
 module.exports = Completer;
