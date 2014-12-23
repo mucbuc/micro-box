@@ -1,7 +1,7 @@
 var assert = require( 'assert' )
   , macros = require( './macros' )
   , fs = require( 'fs' )
-  , path = require( 'path' );
+  , path = require( 'path-extra' );
 
 function Completer() {
 
@@ -36,7 +36,8 @@ function Completer() {
       if (    separatorIndex != -1 
           &&  separatorIndex > spaceIndex) {
         var t = partial.substr(spaceIndex + 1, separatorIndex - spaceIndex);
-        lookAheadDir = path.join( lookAheadDir, t );
+        t = t.replace( '~\/', path.homedir() );   
+        lookAheadDir = t;
         rel = partial.substr( separatorIndex + 1);
       }
       else {
