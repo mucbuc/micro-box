@@ -10,19 +10,17 @@ function Completer() {
     for(var property in macros) {
       var macro = macros[property];
       if (!partial.indexOf(property)) { 
-        if (false && macro.indexOf('#BRANCH_NAME') != -1) {
+        if (macro.indexOf('#BRANCH_NAME') != -1) {
           var branch = require('git-branch');
-          macro = macro.replace( '#BRANCH_NAME', branch )
-        }
-        else {
-          process.stdout.write( require('git-branch') );
+          macro = macro.replace( '#BRANCH_NAME', branch.slice(0, -1) );
+          macro += ' ';
         }
         callback(null, [ [property + macro], partial ] );
         return;
       }
-      // else if (!property.indexOf(partial)) {
-      //   context.push( property + macro );
-      // }
+      else if (!property.indexOf(partial)) {
+        context.push( property + macro );
+      }
     }
     
     if (context.length) {
