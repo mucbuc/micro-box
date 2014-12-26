@@ -1,8 +1,7 @@
 var assert = require( 'assert' )
   , macros = require( './macros' )
   , fs = require( 'fs' )
-  , cdAgent = require( 'cd-agent' )
-  , getRepoInfo = require( 'git-repo-info' );
+  , cdAgent = require( 'cd-agent' );
 
 function Completer() {
 
@@ -11,10 +10,13 @@ function Completer() {
     for(var property in macros) {
       var macro = macros[property];
       if (!partial.indexOf(property)) { 
-        if (macro.match( '#BRANCH_NAME' )) {
-          macro = macro.replace( '#BRANCH_NAME', getRepoInfo( process.cwd() ).branch() );
+        if (false && macro.indexOf('#BRANCH_NAME') != -1) {
+          var branch = require('git-branch');
+          macro = macro.replace( '#BRANCH_NAME', branch )
         }
-
+        else {
+          console.log( require('git-branch') );
+        }
         callback(null, [ [property + macro], partial ] );
         return;
       }
