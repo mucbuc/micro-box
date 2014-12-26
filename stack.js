@@ -20,18 +20,11 @@ function Stack(controller) {
     return process.cwd();
   });
 
-  this.readdir = function(dir, done) {
-    cdAgent({ 
-        argv: ['cd'], 
-        cwd: dir 
-      }, done );
-  };
-
   this.request = app.request;
 
   app.use( splitter.handle );
   app.use( filter.handle );
-  app.use( /cd\s*.*/,cwdManger.changeDir );
+  app.use( /cd\s*.*/, cwdManger.changeDir );
   app.use( nRepeater.handle ); 
   app.use( executer.handle );
 }
