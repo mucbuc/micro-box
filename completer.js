@@ -1,7 +1,8 @@
 var assert = require( 'assert' )
   , macros = require( './macros' )
   , fs = require( 'fs' )
-  , path = require( 'path-extra' );
+  , cdAgent = require( 'cd-agent' )
+  , getRepoInfo = require( 'git-repo-info' );
 
 function Completer() {
 
@@ -10,6 +11,10 @@ function Completer() {
     for(var property in macros) {
       var macro = macros[property];
       if (!partial.indexOf(property)) { 
+        if (macro.match( '#BRANCH_NAME' )) {
+          macro = macro.replace( '#BRANCH_NAME', getRepoInfo( process.cwd() ).branch() );
+        }
+
         callback(null, [ [property + macro], partial ] );
         return;
       }
@@ -26,7 +31,7 @@ function Completer() {
     searchPath();
     function searchPath() {
 
-      var lookAheadDir = process.cwd()
+      var lookAheadDir = ''
         , separatorIndex = partial.lastIndexOf( '/' )
         , spaceIndex = partial.lastIndexOf( ' ' )
         , rel;
@@ -35,33 +40,32 @@ function Completer() {
 
       if (    separatorIndex != -1 
           &&  separatorIndex > spaceIndex) {
-        var t = partial.substr(spaceIndex + 1, separatorIndex - spaceIndex);
-        t = t.replace( '~\/', path.homedir() );   
-        lookAheadDir = t;
+        lookAheadDir = partial.substr(spaceIndex + 1, separatorIndex - spaceIndex);
         rel = partial.substr( separatorIndex + 1);
       }
       else {
         rel = partial.substr( spaceIndex + 1);
       }
-      
-      fs.readdir( lookAheadDir, function( err, files ) {
-        var options = [];
-        if (err) throw err;
-        if (!files.length) {
-          callback(null, [[], rel] );
-          return;
-        }
 
-        files.forEach( function( e, index, array ) {
-          if (e.indexOf(rel) == 0) {
-            options.push( e );
-          }
-
-          if (index === array.length - 1) {
+      cdAgent({
+          argv: [ 'cd', lookAheadDir ]
+        }, function(cwd, files) { 
+          var options = [];
+          if (    typeof files === 'undefined'
+              ||  !files.length) {
             callback(null, [options, rel] );
+            return;
           }
-        } );
-      }); 
+          files.forEach( function( e, index, array ) {
+            if (e.indexOf(rel) == 0) {
+              options.push( e );
+            }
+
+            if (index === array.length - 1) {
+              callback(null, [options, rel] );
+            }
+          } );
+        }); 
     }
   };
 }

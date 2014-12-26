@@ -8,7 +8,7 @@
     "app-stack": "*",
     "splitargs": "*",
     "cd-agent": "*",
-    "path-extra": "*"
+    "git-repo-info": "*"
   },
   "devDependencies": {
     "mocha": "^2.0.1"
