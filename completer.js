@@ -15,14 +15,14 @@ function Completer() {
           macro = macro.replace( '#BRANCH_NAME', branch )
         }
         else {
-          console.log( require('git-branch') );
+          process.stdout.write( require('git-branch') );
         }
         callback(null, [ [property + macro], partial ] );
         return;
       }
-      else if (!property.indexOf(partial)) {
-        context.push( property + macro );
-      }
+      // else if (!property.indexOf(partial)) {
+      //   context.push( property + macro );
+      // }
     }
     
     if (context.length) {
