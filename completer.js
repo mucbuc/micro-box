@@ -1,7 +1,8 @@
 var assert = require( 'assert' )
   , macros = require( './macros' )
   , fs = require( 'fs' )
-  , cdAgent = require( 'cd-agent' );
+  , cdAgent = require( 'cd-agent' )
+  , cp = require( 'child_process' );
 
 function Completer() {
 
@@ -14,11 +15,18 @@ function Completer() {
           &&  (   !property.indexOf(partial)
               ||  !command.indexOf(partial))) { 
         if (macro.indexOf('#BRANCH_NAME') != -1) {
-          var branch = require('git-branch');
-          command = property + macro.replace( '#BRANCH_NAME', branch.slice(0, -1) );
-          command += ' ';
+          cp.exec( 'git rev-parse --abbrev-ref HEAD', function( err, stdout ) {
+            var branch = stdout.toString().slice(0, -1);
+            if (err) throw err; 
+            command = property + macro.replace( '#BRANCH_NAME', branch );
+            command += ' ';            
+            callback(null, [ [command], partial ] );
+          });
         }
-        callback(null, [ [command], partial ] );
+        else {
+          callback(null, [ [command], partial ] );
+        }
+        // don't search paths
         return;
       }
       else if (!property.indexOf(partial)) {
