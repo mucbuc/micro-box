@@ -5,5 +5,7 @@
 	"git l": "og --oneline --decorate",
 	"git co": "mmit -am '#BRANCH_NAME",
 	"git ch": "eckout ",
-	"git b": "ranch"
+	"git b": "ranch ",
+	"git r": "emote ",
+	"git a": "dd"
 }
