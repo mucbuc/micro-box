@@ -26,7 +26,6 @@ function Completer() {
         else {
           callback(null, [ [command], partial ] );
         }
-        // don't search paths
         return;
       }
       else if (!property.indexOf(partial)) {
