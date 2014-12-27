@@ -8,18 +8,21 @@ function Completer() {
   this.complete = function(partial, callback) {
     var context = [];
     for(var property in macros) {
-      var macro = macros[property];
-      if (!partial.indexOf(property)) { 
+      var macro = macros[property]
+        , command = property + macro;
+      if (    partial.length > property.length 
+          &&  (   !property.indexOf(partial)
+              ||  !command.indexOf(partial))) { 
         if (macro.indexOf('#BRANCH_NAME') != -1) {
           var branch = require('git-branch');
-          macro = macro.replace( '#BRANCH_NAME', branch.slice(0, -1) );
-          macro += ' ';
+          command = property + macro.replace( '#BRANCH_NAME', branch.slice(0, -1) );
+          command += ' ';
         }
-        callback(null, [ [property + macro], partial ] );
+        callback(null, [ [command], partial ] );
         return;
       }
       else if (!property.indexOf(partial)) {
-        context.push( property + macro );
+        context.push( command );
       }
     }
     

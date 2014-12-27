@@ -2,8 +2,6 @@ var cdAgent = require( 'cd-agent' );
   
 function CWDManager() {
 
-  var home = process.cwd();
-
   this.changeDir = function(req, res) {
     cdAgent({ 
         argv: req.argv,

@@ -2,6 +2,8 @@
 	"ls": " -la",
 	"git s": "tatus -sb",
 	"git d": "iff --word-diff",
-	"git l": "og -p",
-	"git c": "ommit -am '#BRANCH_NAME"
+	"git l": "og --oneline --decorate",
+	"git co": "mmit -am '#BRANCH_NAME",
+	"git ch": "eckout ",
+	"git b": "ranch"
 }
