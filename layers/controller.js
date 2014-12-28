@@ -3,8 +3,9 @@ var assert = require( 'assert' )
 
 function Controller() {
   this.handle = function(req, res) {
-	req.exec = [];
-	req.exec.push( req.argv );	
+	if (req.hasOwnProperty('argv')) {
+		req.exec = [ req.argv ];
+	}	
   	res.end();
   }; 
 }
