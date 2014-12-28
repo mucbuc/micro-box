@@ -5,16 +5,12 @@ function Executer() {
 
   this.handle = function(req, res) {
           
-    if (req.hasOwnProperty('argv') && req.argv.length) {
-      var command = ''
-        , argv = []
-        , stub = req.exec[0];
-
-      command = stub[0];
-      if (stub.length > 1) {
-        argv = stub.splice(1);
-      }
-      spawn(command, argv);
+    if (req.hasOwnProperty('exec') && req.exec.length) {
+      req.exec.forEach( function(stub) {
+        var command = stub[0]
+          , argv = stub.length > 1 ? stub.splice(1) : [];
+        spawn(command, argv);
+      });
     }
     else {
       res.end();
