@@ -5,7 +5,8 @@ var AppStack = require( 'app-stack' )
   , Filter = require( './layers/filter.js' )
   , Splitter = require( './layers/splitter.js' )
   , CWDManger = require( './layers/cwd.js' )
-  , Tracker = require( './layers/history.js' );
+  , Tracker = require( './layers/history.js' )
+  , Controller = require( './layers/controller.js' );
 
 function Stack(controller) {
   var app = new AppStack( function() { 
@@ -16,7 +17,8 @@ function Stack(controller) {
     , filter = new Filter()
     , splitter = new Splitter()
     , cwdManger = new CWDManger()
-    , tracker = new Tracker();
+    , tracker = new Tracker()
+    , combiner = new Controller();
 
   this.__defineGetter__('cwd', function() { 
     return process.cwd();
@@ -29,6 +31,7 @@ function Stack(controller) {
   app.use( /cd\s*.*/, cwdManger.changeDir );
   app.use( nRepeater.handle );
   app.use( tracker.handle ); 
+  app.use( combiner.handle );
   app.use( executer.handle );
 }
 
