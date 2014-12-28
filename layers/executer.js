@@ -4,22 +4,25 @@ var assert = require( 'assert' )
 function Executer() {
 
   this.handle = function(req, res) {
-    var command = ''
-      , argv = []
-      , child;
-      
+          
     if (req.hasOwnProperty('argv') && req.argv.length) {
-      command = req.argv[0];
-      if (req.argv.length > 1) {
-        argv = req.argv.splice(1);
+      var command = ''
+        , argv = []
+        , stub = req.exec[0];
+
+      command = stub[0];
+      if (stub.length > 1) {
+        argv = stub.splice(1);
       }
-      spawn();
+      spawn(command, argv);
     }
     else {
       res.end();
     }
 
-    function spawn() {
+    function spawn(command, argv) {
+      
+      var child;
 
       process.stdin.pause(); 
       process.stdin.setRawMode( false );
