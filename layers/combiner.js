@@ -6,14 +6,17 @@ function Combiner() {
 	if (req.hasOwnProperty('argv')) {
 		assert(Array.isArray(req.argv));
 
-		var index = req.argv.indexOf( '|' );
+		var index = findNextPipe( req.argv );
 		if (index != -1) {
-			//while (index != -1) {
-				req.exec = [ req.argv ];
-				//req.exec = [ req.argv.slice(0, index - 1) ];
-				//req.argv = req.argv.slice(index + 1);
-				//res.end();
-			//}
+			var argv = req.argv; 
+			req.exec = [];
+
+			while (index != -1) {
+				req.exec.push( argv.slice(0, index) );
+				argv = argv.slice(index + 1);
+				index = findNextPipe( argv );
+			}
+			req.exec.push( argv );
 		}
 		else {
 			req.exec = [ req.argv ];
@@ -21,6 +24,10 @@ function Combiner() {
 	}	
   	res.end();
   }; 
+
+	function findNextPipe(argv) {
+		return argv.indexOf( '|' );
+	}
 }
 
 module.exports = Combiner; 
