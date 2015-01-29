@@ -6,7 +6,7 @@ var AppStack = require( 'app-stack' )
   , Splitter = require( './layers/splitter.js' )
   , CWDManger = require( './layers/cwd.js' )
   , Tracker = require( './layers/history.js' )
-  , Controller = require( './layers/controller.js' );
+  , Combiner = require( './layers/combiner.js' );
 
 function Stack(controller) {
   var app = new AppStack( function() { 
@@ -18,7 +18,7 @@ function Stack(controller) {
     , splitter = new Splitter()
     , cwdManger = new CWDManger()
     , tracker = new Tracker()
-    , combiner = new Controller();
+    , combiner = new Combiner();
 
   this.__defineGetter__('cwd', function() { 
     return process.cwd();
