@@ -1,14 +1,11 @@
 var assert = require( 'assert' )
-  , cp = require( 'child_process' )
-  , util = require( 'util' );
+  , cp = require( 'child_process' );
 
 function Executer() {
 
   this.handle = function(req, res) {
           
     if (req.hasOwnProperty('exec') && req.exec.length) {
-      console.log( util.inspect(req.exec) );
-
       req.exec.forEach( function(stub) {
         var command = stub[0]
           , argv = stub.length > 1 ? stub.splice(1) : [];
@@ -22,8 +19,6 @@ function Executer() {
     function spawn(command, argv) {
 
       var child;
-
-      console.log( 'spawn', command, argv );
 
       process.stdin.pause(); 
       process.stdin.setRawMode( false );
