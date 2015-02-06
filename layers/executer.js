@@ -59,6 +59,9 @@ function Executer() {
         });
       }
     }
+    else {
+      res.end();
+    }
 
     function openStdout(line, callback) {
       if (line.length <= 1) {
