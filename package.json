@@ -7,7 +7,8 @@
     "emit-stream": "*",
     "app-stack": "*",
     "splitargs": "*",
-    "cd-agent": "*"
+    "cd-agent": "*",
+    "tmp": "*"
   },
   "devDependencies": {
     "mocha": "^2.0.1"
