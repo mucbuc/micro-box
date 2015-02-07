@@ -10,7 +10,7 @@ var assert = require( 'assert' )
 
 function Console() {
 
-  var stack = new Stack( controller )
+  var stack = new Stack( new events.EventEmitter() )
     , completer = new Completer()
     , cwd = process.cwd()
     , rl
@@ -44,8 +44,7 @@ function Console() {
 
 if (!module.parent) {
   var events = require( 'events' )
-    , controller = new events.EventEmitter()
-    , c = new Console( controller );
+    , c = new Console();
 }
 
 module.exports = Console; 
