@@ -10,7 +10,8 @@ var assert = require( 'assert' )
 
 function Console() {
 
-  var stack = new Stack( new events.EventEmitter() )
+  var controller = new events.EventEmitter()
+    , stack = new Stack( controller )
     , completer = new Completer()
     , cwd = process.cwd()
     , rl
