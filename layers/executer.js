@@ -41,7 +41,7 @@ function Executer() {
 
             if (child.stdout) {
               child.stdout.on( 'data', function(data){
-                child.emit( 'stdout data', data );
+                res.controller.emit( 'stdout data', data );
               });
             }
 
