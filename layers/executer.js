@@ -37,11 +37,18 @@ function Executer() {
 
         controller.once( 'stdin ready', function(stdin) {
           controller.once( 'stdout ready', function(stdout, path) {
-            spawn( getContext(req, stdin, stdout) ) 
-            .once( 'exit', function(code, signal) {
+            var child = spawn( getContext(req, stdin, stdout) );
+
+            if (child.stdout) {
+              child.stdout.on( 'data', function(data){
+                child.emit( 'stdout data', data );
+              });
+            }
+
+            child.once( 'exit', function(code, signal) {
               controller.emit( 'exit', code, signal, path );
-            })
-            .on( 'error', function(data) {
+            });
+            child.on( 'error', function(data) {
               console.log( data.toString() );
               controller.emit( 'exit', 1 );
             });
