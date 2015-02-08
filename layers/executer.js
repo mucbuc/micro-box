@@ -65,7 +65,7 @@ function Executer() {
 
     function openStdout(line, callback) {
       if (line.length <= 1) {
-        callback( process.stdout );
+        callback( req.hasOwnProperty('stdout') ? req.stdout : process.stdout );
       }
       else {
         tmp.file( function( err, path ) {
