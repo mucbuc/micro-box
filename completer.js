@@ -1,5 +1,4 @@
 var assert = require( 'assert' )
-  , macros = require( './macros' )
   , fs = require( 'fs' )
   , cdAgent = require( 'cd-agent' )
   , cp = require( 'child_process' );
@@ -8,37 +7,48 @@ function Completer() {
 
   this.complete = function(partial, callback) {
     var context = [];
-    for(var property in macros) {
-      var macro = macros[property]
-        , command = property + macro;
-      if (    partial.length > property.length 
-          &&  (   !property.indexOf(partial)
-              ||  !command.indexOf(partial))) { 
-        if (macro.indexOf('#BRANCH_NAME') != -1) {
-          cp.exec( 'git rev-parse --abbrev-ref HEAD', function( err, stdout ) {
-            var branch = stdout.toString().slice(0, -1);
-            if (err) throw err; 
-            command = property + macro.replace( '#BRANCH_NAME', branch );
-            command += ' ';            
+
+    fs.readFile( './macros.json', function(error, data) {
+      if (error) throw error;
+
+      tryMatchMacros(JSON.parse(data.toString()));
+    });
+
+    function tryMatchMacros(macros) {
+      for(var property in macros) {
+        var macro = macros[property]
+          , command = property + macro;
+        if (    partial.length > property.length 
+            &&  (   !property.indexOf(partial)
+                ||  !command.indexOf(partial))) { 
+          if (macro.indexOf('#BRANCH_NAME') != -1) {
+            cp.exec( 'git rev-parse --abbrev-ref HEAD', function( err, stdout ) {
+              var branch = stdout.toString().slice(0, -1);
+              if (err) throw err; 
+              command = property + macro.replace( '#BRANCH_NAME', branch );
+              command += ' ';            
+              callback(null, [ [command], partial ] );
+            });
+          }
+          else {
             callback(null, [ [command], partial ] );
-          });
+          }
+          return;
         }
-        else {
-          callback(null, [ [command], partial ] );
+        else if (!property.indexOf(partial)) {
+          context.push( command );
         }
+      }
+
+      // this is messy
+      if (context.length) {
+        callback(null, [ context, partial ]);
         return;
       }
-      else if (!property.indexOf(partial)) {
-        context.push( command );
-      }
+      
+      searchPath();
     }
-    
-    if (context.length) {
-      callback(null, [ context, partial ]);
-      return;
-    }
-    
-    searchPath();
+
     function searchPath() {
 
       var lookAheadDir = ''

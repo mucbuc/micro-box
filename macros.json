@@ -7,5 +7,8 @@
 	"git ch": "eckout ",
 	"git b": "ranch ",
 	"git r": "emote ",
-	"git a": "dd"
+	"git a": "dd ", 
+	"git pul": "l ",
+	"git pus": "h ",
+	"git f": "etch "
 }
