@@ -44,6 +44,7 @@ function Console() {
 }
 
 if (!module.parent) {
+  console.log(process.argv);
   var events = require( 'events' )
     , c = new Console();
 }

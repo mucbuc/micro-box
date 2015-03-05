@@ -1,14 +1,15 @@
 var assert = require( 'assert' )
   , fs = require( 'fs' )
   , cdAgent = require( 'cd-agent' )
-  , cp = require( 'child_process' );
+  , cp = require( 'child_process' )
+  , path = require( 'path');
 
 function Completer() {
 
   this.complete = function(partial, callback) {
-    var context = [];
-
-    fs.readFile( './macros.json', function(error, data) {
+    var context = []
+      , tmp = path.join( path.dirname(process.argv[1]), './macros.json' );
+    fs.readFile( tmp, function(error, data) {
       if (error) throw error;
 
       tryMatchMacros(JSON.parse(data.toString()));
