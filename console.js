@@ -2,17 +2,18 @@
 
 var assert = require( 'assert' )
   , readline = require( 'readline' )
-  , Stack = require( './stack' )
   , events = require( 'events' )
   , stream = require( 'stream' )
   , fs = require( 'fs' )
-  , Completer = require( './completer' );
+  , mb = require( './index.js' );
+
+assert( typeof mb !== 'undefined' ); 
 
 function Console() {
 
   var controller = new events.EventEmitter()
-    , stack = new Stack( controller )
-    , completer = new Completer()
+    , stack = new mb.Stack( controller )
+    , completer = new mb.Completer()
     , cwd = process.cwd()
     , rl
     , repeat = '';

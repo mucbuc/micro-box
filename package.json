@@ -2,7 +2,7 @@
   "name": "micro-box",
   "version": "0.0.20",
   "description": "micro-box =========",
-  "main": "stack.js",
+  "main": "index.js",
   "dependencies": {
     "emit-stream": "*",
     "app-stack": "*",
