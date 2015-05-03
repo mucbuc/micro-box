@@ -4,18 +4,19 @@ var assert = require( 'assert' )
 assert( typeof config !== 'undefined' );
 
 function Filter() {
-  this.handle = function( req, res ) {
+  this.handle = function(o) {
+
     var tmp; 
     for (var r in config.sandbox) {
       var re = new RegExp( config.sandbox[r] );
-      if (re.test(req.params)) {
-        res.end();
+      if (re.test(o.input)) {
+        o.next();
         return;
       }
     }
-    process.stdout.write( "'" + req.argv[0] + "' is blocked\n" ); 
-    delete req.argv;
-    res.end();
+    process.stdout.write( "'" + o.argv[0] + "' is blocked\n" ); 
+    delete o.argv;
+    o.next();
   };
 }
 

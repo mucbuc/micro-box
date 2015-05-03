@@ -1,14 +1,14 @@
-{
-	"ls": " -la",
-	"git s": "tatus -sb",
-	"git d": "iff --word-diff",
-	"git l": "og --oneline --decorate",
-	"git co": "mmit -am '#BRANCH_NAME",
-	"git ch": "eckout ",
-	"git b": "ranch ",
-	"git r": "emote ",
-	"git a": "dd ", 
-	"git pul": "l ",
-	"git pus": "h ",
-	"git f": "etch "
-}
+[
+	"ls -la",
+	"git status -sb",
+	"git diff --word-diff",
+	"git log --oneline --decorate",
+	"git commit -am '#BRANCH_NAME",
+	"git checkout ",
+	"git branch ",
+	"git remote ",
+	"git add ", 
+	"git pull ",
+	"git push ",
+	"git fetch "
+]

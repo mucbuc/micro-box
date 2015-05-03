@@ -7,9 +7,9 @@ var assert = require( 'assert' )
 
 function Executer() {
 
-  this.handle = function(req, res) {
+  this.handle = function(o) {
 
-    if (req.hasOwnProperty('exec') && req.exec.length) {
+    if (o.hasOwnProperty('exec') && o.exec.length) {
 
       var controller = new events.EventEmitter();
 
@@ -18,14 +18,14 @@ function Executer() {
 
       controller.on( 'exit', function(code, signal, outPath) {
         if (    !code 
-            &&  req.exec.length) {
+            &&  o.exec.length) {
           execLine(outPath);
         }
         else {
           process.stdin.resume();
           process.stdin.setRawMode( true );
-          res.end();
-          res.controller.emit( 'exit', code, signal );
+          o.next();
+          o.controller.emit( 'exit', code, signal );
         }
       });
 
@@ -33,15 +33,15 @@ function Executer() {
 
       function execLine(outPath) {
         
-        assert( req.exec.length );
+        assert( o.exec.length );
 
         controller.once( 'stdin ready', function(stdin) {
           controller.once( 'stdout ready', function(stdout, path) {
-            var child = spawn( getContext(req, stdin, stdout) );
+            var child = spawn( getContext(o, stdin, stdout) );
 
             if (child.stdout) {
               child.stdout.on( 'data', function(data){
-                res.controller.emit( 'stdout data', data.toString() );
+                o.controller.emit( 'stdout data', data.toString() );
               });
             }
 
@@ -53,10 +53,10 @@ function Executer() {
               controller.emit( 'exit', 1 );
             });
 
-            req.exec.splice(0,1);
+            o.exec.splice(0,1);
           });
 
-          openStdout(req.exec, function(fd, path) {
+          openStdout(o.exec, function(fd, path) {
             controller.emit( 'stdout ready', fd, path );
           });
         } );
@@ -67,12 +67,12 @@ function Executer() {
       }
     }
     else {
-      res.end();
+      o.next();
     }
 
     function openStdout(line, callback) {
       if (line.length <= 1) {
-        callback( req.hasOwnProperty('stdout') ? req.stdout : process.stdout );
+        callback( o.hasOwnProperty('stdout') ? o.stdout : process.stdout );
       }
       else {
         tmp.file( function( err, path ) {

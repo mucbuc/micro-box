@@ -4,12 +4,13 @@
   "description": "micro-box =========",
   "main": "index.js",
   "dependencies": {
+    "chai": "*",
     "emit-stream": "*",
-    "app-stack": "*",
+    "flow-troll": "*",
     "splitargs": "*",
     "cd-agent": "*",
     "tmp": "*",
-    "auto-logic": "../auto-logic"
+    "auto-logic": "*"
   },
   "devDependencies": {
     "mocha": "^2.0.1"

@@ -2,32 +2,32 @@ var assert = require( 'assert' )
   , cp = require( 'child_process' );
 
 function Combiner() {
-  this.handle = function(req, res) {
-	if (req.hasOwnProperty('argv')) {
-		assert(Array.isArray(req.argv));
+  this.handle = function(o) {
+	if (o.hasOwnProperty('argv')) {
+		assert(Array.isArray(o.argv));
 
-		var index = findNextPipe( req.argv );
+		var index = findNextPipe( o.argv );
 		if (index != -1) {
-			var argv = req.argv; 
-			req.exec = [];
+			var argv = o.argv; 
+			o.exec = [];
 
 			while (index != -1) {
-				req.exec.push( argv.slice(0, index) );
+				o.exec.push( argv.slice(0, index) );
 				argv = argv.slice(index + 1);
 				index = findNextPipe( argv );
 			}
-			req.exec.push( argv );
+			o.exec.push( argv );
 		}
 		else {
-			req.exec = [ req.argv ];
+			o.exec = [ o.argv ];
 		}
 	}	
-  	res.end();
-  }; 
+  	o.next();
 
 	function findNextPipe(argv) {
 		return argv.indexOf( '|' );
 	}
+  }; 
 }
 
 module.exports = Combiner; 

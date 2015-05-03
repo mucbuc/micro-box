@@ -2,23 +2,24 @@ var cdAgent = require( 'cd-agent' );
   
 function CWDManager() {
 
-  this.changeDir = function(req, res) {
+  this.changeDir = function(o) {
+    
     cdAgent({ 
-        argv: req.argv,
+        argv: o.argv,
         cwd: process.cwd()
       }, 
       function(cwd, list) {
-        delete req.argv;
+        delete o.argv;
         
         if (typeof cwd !== 'undefined') {
-          res.cwd = cwd;
+          o.cwd = cwd;
           process.chdir(cwd);
         }
         if (typeof list !== 'undefined') {
-          res.context = list;
-          context = list;
+          o.context = list;
         }
-        res.end();
+
+        o.next(); 
       });
   };
 }

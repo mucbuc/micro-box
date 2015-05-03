@@ -4,17 +4,17 @@ function NRepeater() {
 
   var previous = '';
 
-  this.handle = function( req, res) { 
+  this.handle = function(o) { 
   
     if (previous.length) {
-      var d = findDiff(previous, req.params);
+      var d = findDiff(previous, o.input);
       if (d > 0) {
-        res.repeat = previous.substr(0, d);
+        o.repeat = previous.substr(0, d);
       }
     }
-    previous = req.params;
-    
-    res.end();
+    previous = o.input;
+
+    o.next();
 
     function findDiff(lhs, rhs) {
       var index = 0;

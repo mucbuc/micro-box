@@ -8,10 +8,10 @@ function Tracker() {
 		output.end();
 	});
 
-  this.handle = function(req, res) {
-    assert( req.hasOwnProperty( 'params' ) );
-    output.write( req.params + '\n' );
-		res.end();	
+  this.handle = function(o) {
+    assert( o.input !== 'undefined' );
+    output.write( o.output + '\n' );
+		o.next();	
   };
 }
 

@@ -13,7 +13,7 @@ function Console() {
 
   var controller = new events.EventEmitter()
     , stack = new mb.Stack( controller )
-    , completer = new mb.Completer()
+    , completer = new mb.Completer( { 'macroPath': './' } )
     , cwd = process.cwd()
     , rl
     , repeat = '';
@@ -25,10 +25,7 @@ function Console() {
   });
 
   rl.on( 'line', function(cmd) {
-    stack.request( { 
-      params: repeat + cmd 
-    }, 
-    read );
+    stack.request( repeat + cmd, read );
   });
 
   read();
