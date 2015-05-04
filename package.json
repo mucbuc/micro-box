@@ -1,20 +1,19 @@
 {
   "name": "micro-box",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "micro-box =========",
   "main": "index.js",
   "dependencies": {
-    "chai": "*",
-    "emit-stream": "*",
     "flow-troll": "*",
     "splitargs": "*",
     "cd-agent": "*",
     "tmp": "*",
-    "auto-logic": "*",
-    "expector": "*"
+    "auto-logic": "*" 
   },
   "devDependencies": {
-    "mocha": "^2.0.1"
+    "mocha": "*",
+    "expector": "*",
+    "chai": "*"
   },
   "scripts": {
     "test": "mocha -u tdd --recursive"
