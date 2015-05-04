@@ -10,7 +10,8 @@
     "splitargs": "*",
     "cd-agent": "*",
     "tmp": "*",
-    "auto-logic": "*"
+    "auto-logic": "*",
+    "expector": "*"
   },
   "devDependencies": {
     "mocha": "^2.0.1"

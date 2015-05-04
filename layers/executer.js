@@ -16,16 +16,19 @@ function Executer() {
       process.stdin.pause(); 
       process.stdin.setRawMode( false );
 
-      controller.on( 'exit', function(code, signal, outPath) {
-        if (    !code 
+      controller.on( 'exit', function(context) {
+
+        if (    !context.code 
             &&  o.exec.length) {
-          execLine(outPath);
+          execLine(context.outPath);
         }
         else {
           process.stdin.resume();
           process.stdin.setRawMode( true );
-          o.next();
-          o.controller.emit( 'exit', code, signal );
+          o.controller.emit( 'exit', context );
+          process.nextTick( function() {
+            o.next(o);
+          });
         }
       });
 
@@ -33,46 +36,89 @@ function Executer() {
 
       function execLine(outPath) {
         
+        var streams = {}
+          , paths = {};
+
         assert( o.exec.length );
 
         controller.once( 'stdin ready', function(stdin) {
-          controller.once( 'stdout ready', function(stdout, path) {
-            var child = spawn( getContext(o, stdin, stdout) );
-
-            if (child.stdout) {
-              child.stdout.on( 'data', function(data){
-                o.controller.emit( 'stdout data', data.toString() );
-              });
-            }
-
-            child.once( 'exit', function(code, signal) {
-              controller.emit( 'exit', code, signal, path );
-            });
-            child.on( 'error', function(data) {
-              console.log( data.toString() );
-              controller.emit( 'exit', 1 );
-            });
-
-            o.exec.splice(0,1);
-          });
-
-          openStdout(o.exec, function(fd, path) {
-            controller.emit( 'stdout ready', fd, path );
-          });
+          streams.stdin = stdin;
+          checkIfReady(streams);
         } );
+
+        controller.once( 'stdout ready', function(stdout, path) {
+          streams.stdout = stdout;
+          streams.outPath = path;
+          checkIfReady(streams);
+        }); 
+
+        controller.once( 'stderr ready', function(stderr, path) {
+          streams.stderr = stderr;
+          streams.errPath = path;
+          checkIfReady(streams);
+        }); 
+
+        controller.once( 'ready', function(){
+          var child = spawn( getContext(
+                o, 
+                streams.stdin, 
+                streams.stdout, 
+                streams.stderr
+              ) );
+
+          if (child.stdout) {
+            child.stdout.on( 'data', function(data){
+              o.controller.emit( 'stdout data', data.toString() );
+            });
+          }
+
+          if (child.stderr) {
+            child.stderr.on( 'data', function(data) {
+              o.controller.emit( 'stderr data', data.toString() );
+            });
+          }
+
+          child.once( 'exit', function(code, signal) {
+            controller.emit( 'exit', { 
+                code: code, 
+                signal: signal, 
+                outPath: paths.outPath, 
+                errPath: paths.errPath 
+              });
+          });
+          
+          o.exec.splice(0,1);
+        });
 
         openStdin(outPath, function(fd) {
           controller.emit( 'stdin ready', fd );
         });
+
+        openOutStream(o.exec, 'stdout', function(fd, path) {
+          controller.emit( 'stdout ready', fd, path );
+        });
+
+        openOutStream(o.exec, 'stderr', function(fd, path) {
+          controller.emit( 'stderr ready', fd, path );
+        });
+
+        function checkIfReady(streams) {
+          if(streams.hasOwnProperty('stdin') 
+            &&  streams.hasOwnProperty('stdout')
+            &&  streams.hasOwnProperty( 'stderr' ))
+          {
+            controller.emit( 'ready' );  
+          }
+        }
       }
     }
     else {
-      o.next();
+      o.next(o);
     }
 
-    function openStdout(line, callback) {
+    function openOutStream(line, name, callback) {
       if (line.length <= 1) {
-        callback( o.hasOwnProperty('stdout') ? o.stdout : process.stdout );
+        callback( o.hasOwnProperty(name) ? o[name] : process[name] );
       }
       else {
         tmp.file( function( err, path ) {
@@ -97,14 +143,15 @@ function Executer() {
       }
     }
 
-    function getContext(req, stdin, stdout) {
+    function getContext(req, stdin, stdout, stderr) {
       var args = req.exec[0]
         , result = {
-            cmd: args[0],
+          cmd: args[0],
             argv: args.length > 1 ? args.splice(1) : [],
             cwd: req.cwd,
             stdin: stdin, 
-            stdout: stdout
+            stdout: stdout,
+            stderr: stderr
           };
       
       return result;
@@ -117,21 +164,20 @@ function spawn(context) {
 
   assert(context.hasOwnProperty('cmd'));
   assert(context.hasOwnProperty('cwd'));
-  assert(context.hasOwnProperty('argv'));
+  assert(context.hasOwnProperty('argv')); 
 
-  if (!context.hasOwnProperty('stdin')) {
-    context.stdin = process.stdin;
-  }
-
-  if (!context.hasOwnProperty('stdout')) {
-    context.stdout = process.stdout;
-  }
+  ['stdin', 'stdout', 'stderr']
+  .forEach(function(name){
+    if (!context.hasOwnProperty(name)) {
+      context[name] = process[name];
+    }
+  });
 
   return cp.spawn(
     context.cmd, 
     context.argv, 
     { 
-      stdio: [ context.stdin, context.stdout, process.stderr ],
+      stdio: [ context.stdin, context.stdout, context.stderr ],
       cwd: context.cwd
     });
 } 

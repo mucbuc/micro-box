@@ -27,14 +27,9 @@ function Stack(controller) {
 
   this.request = app.process;
 
-  app.use( function(o) { 
-    assert( typeof o.input === 'string' );
-    var input = { 
-          params: o.input
-        };
-
+  app.use( function(o) {
     o.controller = controller;
-    o.next(); 
+    o.next(o);
   });
 
   app.use( splitter.handle );

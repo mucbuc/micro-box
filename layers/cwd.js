@@ -3,7 +3,6 @@ var cdAgent = require( 'cd-agent' );
 function CWDManager() {
 
   this.changeDir = function(o) {
-    
     cdAgent({ 
         argv: o.argv,
         cwd: process.cwd()

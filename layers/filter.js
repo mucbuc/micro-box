@@ -5,7 +5,6 @@ assert( typeof config !== 'undefined' );
 
 function Filter() {
   this.handle = function(o) {
-
     var tmp; 
     for (var r in config.sandbox) {
       var re = new RegExp( config.sandbox[r] );

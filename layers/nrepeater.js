@@ -5,7 +5,6 @@ function NRepeater() {
   var previous = '';
 
   this.handle = function(o) { 
-  
     if (previous.length) {
       var d = findDiff(previous, o.input);
       if (d > 0) {
