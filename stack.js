@@ -7,7 +7,8 @@ var assert = require( 'assert' )
   , Splitter = require( './layers/splitter.js' )
   , CWDManger = require( './layers/cwd.js' )
   , Tracker = require( './layers/history.js' )
-  , Combiner = require( './layers/combiner.js' );
+  , Combiner = require( './layers/combiner.js' )
+  , MacroMaker = require( './layers/macromaker.js' );
 
 function Stack(controller) {
   var app = new FlowStack()
@@ -17,7 +18,8 @@ function Stack(controller) {
     , splitter = new Splitter()
     , cwdManger = new CWDManger()
     , tracker = new Tracker()
-    , combiner = new Combiner();
+    , combiner = new Combiner()
+    , macromaker = new MacroMaker;;
 
   assert( typeof controller !== 'undefined' );
 
@@ -39,6 +41,7 @@ function Stack(controller) {
   app.use( tracker.handle ); 
   app.use( combiner.handle );
   app.use( executer.handle );
+  app.use( macromaker.handle );
 }
 
 module.exports = Stack; 
