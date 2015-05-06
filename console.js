@@ -13,7 +13,7 @@ function Console() {
 
   var controller = new events.EventEmitter()
     , stack = new mb.Stack( controller )
-    , completer = new mb.Completer( { 'macroPath': './' } )
+    , completer = new mb.Completer( { 'macroPath': './macros.json' } )
     , cwd = process.cwd()
     , rl
     , repeat = '';
