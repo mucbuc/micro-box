@@ -1,5 +1,5 @@
 [
 	"git branch -v",
-	"git status",
-	"ls -la"
+	"git diff",
+	"git status"
 ]
