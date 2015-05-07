@@ -24,6 +24,18 @@ suite( 'executer', function() {
     expector.check();
   });
 
+    // test( 'checkIn', function(done) {
+
+  //   var context = dummyContext(done);
+  //   console.log( context.cwd );
+
+  //   expector.expect( 'exit' );
+  //   executer.handle( context );
+  //   console.log( 'a' );
+  //   //context.controller.emit( 'stdin data', 'a\n' );
+  //   done();
+  // });
+
   test( 'checkError', function(done) {
       
     var context = defaultContext(done); 
