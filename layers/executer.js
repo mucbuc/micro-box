@@ -86,6 +86,10 @@ function Executer() {
                 errPath: paths.errPath 
               });
           });
+
+          o.controller.once( 'kill', function() {
+            child.kill();
+          }); 
           
           o.exec.splice(0,1);
         });

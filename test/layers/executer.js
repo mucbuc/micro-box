@@ -49,6 +49,18 @@ suite( 'executer', function() {
     executer.handle( context );
   });
 
+  // this must be the last test run, don't know
+  test( 'checkKill', function(done) {
+    var context = defaultContext(done);
+    context.exec = [['dummy_read']];
+    context.cwd = path.join( __dirname, '../bin' );
+
+    expector.expect( 'kill' );
+    executer.handle( context );
+    context.controller.emit('kill');
+    done();
+  });
+
   function defaultContext(done) {
     return {
       controller: expector, 
