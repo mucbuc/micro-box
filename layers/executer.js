@@ -107,7 +107,7 @@ function Executer() {
         });
 
         function checkIfReady(streams) {
-          if(streams.hasOwnProperty('stdin') 
+          if(   streams.hasOwnProperty('stdin') 
             &&  streams.hasOwnProperty('stdout')
             &&  streams.hasOwnProperty( 'stderr' ))
           {

@@ -16,25 +16,24 @@ suite( 'executer', function() {
     , expector;
 
   setup(function() {
+    console.log( '*setup' ); 
     executer = new Executer();
     expector = new Expector();
   });
 
   teardown(function() {
     expector.check();
+    console.log( '*teardown' ); 
   });
 
-    test( 'checkIn', function(done) {
+  // test( 'checkIn', function(done) {
 
-    var context = dummyContext(done);
-    console.log( context.cwd );
-
-    expector.expect( 'exit' );
-    executer.handle( context );
-    console.log( 'a' );
-    //context.controller.emit( 'stdin data', 'a\n' );
-    done();
-  });
+  //   var context = dummyContext(done);
+  //   expector.expect( 'exit' );
+  //   executer.handle( context );
+  //   process.stdout.write( 'a\n' ); 
+  //   done();
+  // });
 
   test( 'checkError', function(done) {
       
@@ -63,9 +62,7 @@ suite( 'executer', function() {
 
   // this must be the last test run, don't know
   test( 'checkKill', function(done) {
-    var context = defaultContext(done);
-    context.exec = [['dummy_read']];
-    context.cwd = path.join( __dirname, '../bin' );
+    var context = dummyContext(done);
 
     expector.expect( 'kill' );
     executer.handle( context );
@@ -82,6 +79,13 @@ suite( 'executer', function() {
         done();
       }
     };
+  }
+
+  function dummyContext(done) {
+    var result = defaultContext(done);
+    result.exec = [['dummy_read']];
+    result.cwd = path.join( __dirname, '../bin' );
+    return result;
   }
 
 });
