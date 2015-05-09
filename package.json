@@ -8,7 +8,8 @@
     "splitargs": "*",
     "cd-agent": "*",
     "tmp": "*",
-    "auto-logic": "*" 
+    "auto-logic": "*",
+    "mulepack": "*"
   },
   "devDependencies": {
     "mocha": "*",

@@ -3,7 +3,10 @@ var assert = require( 'assert' )
   , tmp = require( 'tmp' )
   , fs = require( 'fs' )
   , events = require( 'events' )
-  , util = require( 'util' );
+  , util = require( 'util' )
+  , mule = require( 'mulepack' );
+
+assert( typeof mule !== 'undefined' );
 
 function Executer() {
 
