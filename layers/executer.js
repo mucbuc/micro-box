@@ -40,8 +40,8 @@ function Executer() {
         o.exec, 
         { 
           stdin: 'pipe', 
-          stderr: 'pipe'//,
-          //cwd: o.req.cwd
+          stderr: 'pipe',
+          cwd: o.cwd
         }, 
         function(child) {
           if (child.stdout) {
