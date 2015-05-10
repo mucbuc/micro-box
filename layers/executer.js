@@ -29,7 +29,7 @@ function Executer() {
         o.exec, 
         { 
           stdout: o.stdout,
-          stderr: 'pipe',
+          stderr: o.stderr,
           stdin: o.stdin, 
           cwd: o.cwd
         }, 
