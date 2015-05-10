@@ -59,14 +59,14 @@ suite( 'executer', function() {
   });
 
   // this must be the last test run, don't know
-  // test( 'checkKill', function(done) {
-  //   var context = dummyContext(done);
+  test( 'checkKill', function(done) {
+    var context = dummyContext(done);
 
-  //   expector.expect( 'kill' );
-  //   executer.handle( context );
-  //   context.controller.emit('kill');
-  //   done();
-  // });
+    expector.expect( 'kill' );
+    executer.handle( context );
+    context.controller.emit('kill');
+    done();
+  });
 
   function defaultContext(done) {
     return {
