@@ -41,6 +41,13 @@ function Executer() {
             });
           }
 
+          if (child.stdin) {
+            o.controller.on( 'stdin data', function(data){
+              console.log( 'got dtaa', data );
+              child.stdin.write( data );
+            });
+          }
+
           child.stderr.on( 'data', function(data) {
             o.controller.emit( 'stderr data', data.toString() );
           });

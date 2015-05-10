@@ -40,6 +40,7 @@ suite( 'executer', function() {
   test( 'checkOut', function(done) {
     
     var context = defaultContext(done);
+
     context.exec = [['ls']];
     context.cwd = path.join( __dirname, '../sample' );
     
@@ -54,28 +55,23 @@ suite( 'executer', function() {
 
     expector.expect( 'kill' );
     executer.handle( context );
+    
     context.controller.emit('kill');
-    done();
   });
 
-  // test( 'checkIn', function(done) {
-
-  //   var context = dummyContext(done);
-
-  //   expector.expect( 'kill' );
-  //   executer.handle( context );
-  //   //context.controller.emit('kill');
-  //   context.controller.emit( 'stdin data', 'a\n' );
-
-  //   done();
-  //   setTimeout(done, 1000 );
-  // });
+  test( 'checkIn', function(done) {
+    var context = dummyContext(done);
+    expector.expect( 'exit' );
+    executer.handle( context );
+    expector.emit( 'stdin data', 'a\n' );
+  });
 
   
   function defaultContext(done) {
     return {
       controller: expector,
       stdout: 'pipe',
+      stdin: 'pipe',
       next: function(o) {
         done();
       }
@@ -85,7 +81,8 @@ suite( 'executer', function() {
   function dummyContext(done) {
     var result = defaultContext(done);
     result.exec = [['dummy_read']];
-    result.cwd = path.join( __dirname, '../bin' );
+    result.env = process.env;
+    result.env.PATH += ':/Users/markymark/work/micro-box/test/bin';
     return result;
   }
 
