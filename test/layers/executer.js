@@ -24,15 +24,6 @@ suite( 'executer', function() {
     expector.check();
   });
 
-  // test( 'checkIn', function(done) {
-
-  //   var context = dummyContext(done);
-  //   expector.expect( 'exit' );
-  //   executer.handle( context );
-  //   process.stdout.write( 'a\n' ); 
-  //   done();
-  // });
-
   test( 'checkError', function(done) {
       
     var context = defaultContext(done); 
@@ -58,7 +49,6 @@ suite( 'executer', function() {
     executer.handle( context );
   });
 
-  // this must be the last test run, don't know
   test( 'checkKill', function(done) {
     var context = dummyContext(done);
 
@@ -68,11 +58,23 @@ suite( 'executer', function() {
     done();
   });
 
+  // test( 'checkIn', function(done) {
+
+  //   var context = dummyContext(done);
+
+  //   expector.expect( 'kill' );
+  //   executer.handle( context );
+  //   //context.controller.emit('kill');
+  //   context.controller.emit( 'stdin data', 'a\n' );
+
+  //   done();
+  //   setTimeout(done, 1000 );
+  // });
+
+  
   function defaultContext(done) {
     return {
-      controller: expector, 
-      stdout: 'pipe',
-      stderr: 'pipe',
+      controller: expector,
       next: function(o) {
         done();
       }

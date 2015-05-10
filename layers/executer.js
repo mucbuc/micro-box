@@ -19,10 +19,6 @@ function Executer() {
       pause(process.stdin); 
       controller.on( 'exit', function(context) {
         resume(process.stdin);
-        if (process.stdin) {
-          process.stdin.resume();
-          process.stdin.setRawMode( true );
-        }
         o.controller.emit( 'exit', context );
         process.nextTick( function() {
           o.next(o);
@@ -32,9 +28,9 @@ function Executer() {
       mule( 
         o.exec, 
         { 
-          stdin: 'pipe', 
           stderr: 'pipe',
           stdout: 'pipe',
+          stdin: 'pipe', 
           cwd: o.cwd
         }, 
         function(child) {
