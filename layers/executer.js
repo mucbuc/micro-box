@@ -34,6 +34,7 @@ function Executer() {
         { 
           stdin: 'pipe', 
           stderr: 'pipe',
+          stdout: 'pipe',
           cwd: o.cwd
         }, 
         function(child) {
