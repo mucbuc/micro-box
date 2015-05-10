@@ -31,6 +31,7 @@ function Stack(controller) {
 
   app.use( function(o) {
     o.controller = controller;
+    o.stdout = process.stdout;
     o.next(o);
   });
 
