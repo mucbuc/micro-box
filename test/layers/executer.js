@@ -16,14 +16,12 @@ suite( 'executer', function() {
     , expector;
 
   setup(function() {
-    console.log( '*setup' ); 
     executer = new Executer();
     expector = new Expector();
   });
 
   teardown(function() {
     expector.check();
-    console.log( '*teardown' ); 
   });
 
   // test( 'checkIn', function(done) {
@@ -48,27 +46,27 @@ suite( 'executer', function() {
     executer.handle( context );
   });
 
-  test( 'checkOut', function(done) {
+  // test( 'checkOut', function(done) {
     
-    var context = defaultContext(done);
-    context.exec = [['ls']];
-    context.cwd = path.join( __dirname, '../sample' );
+  //   var context = defaultContext(done);
+  //   context.exec = [['ls']];
+  //   context.cwd = path.join( __dirname, '../sample' );
     
-    expector.expectNot( 'stderr data' );
-    expector.expect( 'stdout data', 'test_dummy.txt' );
-    expector.expect( 'exit', { code: 0, signal: null } ); 
-    executer.handle( context );
-  });
+  //   expector.expectNot( 'stderr data' );
+  //   expector.expect( 'stdout data', 'test_dummy.txt' );
+  //   expector.expect( 'exit', { code: 0, signal: null } ); 
+  //   executer.handle( context );
+  // });
 
   // this must be the last test run, don't know
-  test( 'checkKill', function(done) {
-    var context = dummyContext(done);
+  // test( 'checkKill', function(done) {
+  //   var context = dummyContext(done);
 
-    expector.expect( 'kill' );
-    executer.handle( context );
-    context.controller.emit('kill');
-    done();
-  });
+  //   expector.expect( 'kill' );
+  //   executer.handle( context );
+  //   context.controller.emit('kill');
+  //   done();
+  // });
 
   function defaultContext(done) {
     return {

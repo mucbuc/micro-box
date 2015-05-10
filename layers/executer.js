@@ -14,29 +14,22 @@ function Executer() {
 
     if (o.hasOwnProperty('exec') && o.exec.length) {
 
-      var controller = new events.EventEmitter()
-        , child;
+      var controller = new events.EventEmitter();
 
-      process.stdin.pause(); 
-      process.stdin.setRawMode( false );
-
+      pause(process.stdin); 
       controller.on( 'exit', function(context) {
-
-        if (    !context.code 
-            &&  o.exec.length) {
-          execLine(context.outPath);
-        }
-        else {
+        resume(process.stdin);
+        if (process.stdin) {
           process.stdin.resume();
           process.stdin.setRawMode( true );
-          o.controller.emit( 'exit', context );
-          process.nextTick( function() {
-            o.next(o);
-          });
         }
+        o.controller.emit( 'exit', context );
+        process.nextTick( function() {
+          o.next(o);
+        });
       });
 
-      child = mule( 
+      mule( 
         o.exec, 
         { 
           stdin: 'pipe', 
@@ -44,17 +37,16 @@ function Executer() {
           cwd: o.cwd
         }, 
         function(child) {
+          assert( child.hasOwnProperty('stderr'));
           if (child.stdout) {
             child.stdout.on( 'data', function(data){
               o.controller.emit( 'stdout data', data.toString() );
             });
           }
 
-          if (child.stderr) {
-            child.stderr.on( 'data', function(data) {
-              o.controller.emit( 'stderr data', data.toString() );
-            });
-          }
+          child.stderr.on( 'data', function(data) {
+            o.controller.emit( 'stderr data', data.toString() );
+          });
 
           child.once( 'exit', function(code, signal) {
             controller.emit( 'exit', { 
@@ -72,6 +64,20 @@ function Executer() {
       o.next(o);
     }
   };
+
+  function pause(stream) {
+    if (typeof stream !== 'undefined') {
+      stream.pause(); 
+      stream.setRawMode( false );
+    }
+  }
+
+  function resume(stream) {
+    if (typeof stream !== 'undefined') {
+      stream.resume(); 
+      stream.setRawMode( true );
+    }
+  }
 }
 
 module.exports = Executer;
