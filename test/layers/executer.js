@@ -75,6 +75,7 @@ suite( 'executer', function() {
   function defaultContext(done) {
     return {
       controller: expector,
+      stdout: 'pipe',
       next: function(o) {
         done();
       }

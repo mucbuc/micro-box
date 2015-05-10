@@ -28,8 +28,8 @@ function Executer() {
       mule( 
         o.exec, 
         { 
+          stdout: o.stdout,
           stderr: 'pipe',
-          stdout: 'pipe',
           stdin: 'pipe', 
           cwd: o.cwd
         }, 
