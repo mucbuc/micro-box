@@ -9,7 +9,7 @@
     "cd-agent": "*",
     "tmp": "*",
     "auto-logic": "*",
-    "mulepack": "/Users/markymark/work/mulepack/"
+    "mulepack": "../mulepack/"
   },
   "devDependencies": {
     "mocha": "*",

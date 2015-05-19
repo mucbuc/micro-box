@@ -1,5 +1,7 @@
 [
+	"git branch",
 	"git branch -v",
 	"git diff",
+	"git fetch origin",
 	"git status"
 ]

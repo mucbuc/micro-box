@@ -34,6 +34,13 @@ function Executer() {
           cwd: o.cwd
         }, 
         function(child) {
+          
+          if (typeof child === 'undefined') {
+            resume(process.stdin);
+            o.next(o);
+            return;
+          }
+
           assert( child.hasOwnProperty('stderr'));
           if (child.stdout) {
             child.stdout.on( 'data', function(data){
@@ -43,7 +50,6 @@ function Executer() {
 
           if (child.stdin) {
             o.controller.on( 'stdin data', function(data){
-              console.log( 'got dtaa', data );
               child.stdin.write( data );
             });
           }
