@@ -40,23 +40,14 @@ function Executer() {
             o.next(o);
             return;
           }
-
-          assert( child.hasOwnProperty('stderr'));
-          if (child.stdout) {
-            child.stdout.on( 'data', function(data){
-              o.controller.emit( 'stdout data', data.toString() );
-            });
-          }
-
+          child.stdout.pipe( process.stdout );
+          child.stderr.pipe( process.stderr );
+          
           if (child.stdin) {
-            o.controller.on( 'stdin data', function(data){
+            o.controller.on( 'stdin', function(data){
               child.stdin.write( data );
             });
           }
-
-          child.stderr.on( 'data', function(data) {
-            o.controller.emit( 'stderr data', data.toString() );
-          });
 
           child.once( 'exit', function(code, signal) {
             controller.emit( 'exit', { 
