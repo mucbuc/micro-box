@@ -30,9 +30,14 @@ suite( 'executer', function() {
     context.exec = [['cat', 'doesNotExist.txt']];
     context.cwd = __dirname;
 
-    expector.expectNot( 'stdout data' );
+    context.next = function() {}
+    expector.on( 'exit', function() {
+      process.nextTick( done );
+    });
+
+    expector.expectNot( 'stdout' );
     expector.expect( 'exit', { code: 1, signal: null } );
-    expector.expect( 'stderr data' );
+    expector.expect( 'stderr' );
 
     executer.handle( context );
   });
@@ -44,28 +49,44 @@ suite( 'executer', function() {
     context.exec = [['ls']];
     context.cwd = path.join( __dirname, '../sample' );
     
-    expector.expectNot( 'stderr data' );
-    expector.expect( 'stdout data', 'test_dummy.txt' );
-    expector.expect( 'exit', { code: 0, signal: null } ); 
+    context.next = function() {}
+    expector.on( 'exit', function() {
+      process.nextTick( done );
+    });
+
+    expector.expectNot( 'stderr' );
+    expector.expect( 'stdout', new Buffer( 'test_dummy.txt\n' ) );
     executer.handle( context );
   });
 
   test( 'checkKill', function(done) {
     var context = dummyContext(done);
 
+    context.next = function() {
+      context.controller.emit('kill');
+    };
+
     expector.expect( 'kill' );
+    expector.expect( 'exit' );
+
+    expector.on( 'exit', function() {
+      process.nextTick( done );
+    });
+
     executer.handle( context );
-    
-    context.controller.emit('kill');
   });
 
   test( 'checkIn', function(done) {
-    var context = dummyContext(done);
-    expector.expect( 'exit' );
-    executer.handle( context );
-    expector.emit( 'stdin data', 'a\n' );
-  });
+    var context = dummyContext(done); 
 
+    context.next = function() {
+      expector.emit( 'stdin', 'a\n' );
+      process.nextTick( done );
+    };  
+    
+    expector.expect( 'stdin' );
+    executer.handle( context );
+  });
   
   function defaultContext(done) {
     return {
@@ -82,38 +103,8 @@ suite( 'executer', function() {
     var result = defaultContext(done);
     result.exec = [['dummy_read']];
     result.env = process.env;
-    result.env.PATH += ':/Users/markymark/work/micro-box/test/bin';
+    result.env.PATH += ':' + path.join(__dirname, '../bin');
     return result;
   }
 
 });
-
-/* from jsthree test_processor.js
-function checkKill() {
-  var e = getDummy();
-
-  e.on( 'exit', function() { 
-    console.log( 'check kill passed' );
-  } );
-
-  e.emit( 'execute' );
-  e.emit( 'kill' ); 
-}
-
-function checkIn() {
-  var e = getDummy();
-
-  e.emit( 'execute' );
-  e.emit( 'stdin', 'a\n' );
-  e.on( 'exit', function() { 
-    console.log( 'check in passed' );
-  } );
-}
-
-function getDummy() {
-  var e = new events.EventEmitter()
-    , wd = path.join( __dirname, 'bin' )
-    , p = new Processor( { cmd: "./dummy_read", cwd: wd }, e );
-
-  return e;
-}*/

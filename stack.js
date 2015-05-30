@@ -41,8 +41,21 @@ function Stack(controller) {
   app.use( nRepeater.handle );
   app.use( tracker.handle ); 
   app.use( combiner.handle );
+
+  app.use( function(o) {
+    process.stdin.pause(); 
+    process.stdin.setRawMode( false );
+    o.next(); 
+  });
+
   app.use( executer.handle );
-  
+
+  app.use( function(o) {
+    process.stdin.resume(); 
+    process.stdin.setRawMode( true ); 
+    o.next(); 
+  });
+
   // make macros out of all succesfull git commands
   app.use( /git*/, macromaker.handle );
 }

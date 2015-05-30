@@ -1,6 +1,6 @@
 {
   "name": "micro-box",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "micro-box =========",
   "main": "index.js",
   "dependencies": {
@@ -9,7 +9,7 @@
     "cd-agent": "*",
     "tmp": "*",
     "auto-logic": "*",
-    "mulepack": "../mulepack/"
+    "mulepack": "*"
   },
   "devDependencies": {
     "mocha": "*",

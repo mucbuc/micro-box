@@ -17,7 +17,6 @@ function CWDManager() {
         if (typeof list !== 'undefined') {
           o.context = list;
         }
-
         o.next(); 
       });
   };

@@ -14,17 +14,6 @@ function Executer() {
 
     if (o.hasOwnProperty('exec') && o.exec.length) {
 
-      var controller = new events.EventEmitter();
-
-      pause(process.stdin); 
-      controller.on( 'exit', function(context) {
-        resume(process.stdin);
-        o.controller.emit( 'exit', context );
-        process.nextTick( function() {
-          o.next(o);
-        });
-      });
-
       mule( 
         o.exec, 
         { 
@@ -32,51 +21,51 @@ function Executer() {
           stderr: o.stderr,
           stdin: o.stdin, 
           cwd: o.cwd
-        }, 
-        function(child) {
-          
-          if (typeof child === 'undefined') {
-            resume(process.stdin);
-            o.next(o);
-            return;
-          }
-          child.stdout.pipe( process.stdout );
-          child.stderr.pipe( process.stderr );
-          
-          if (child.stdin) {
-            o.controller.on( 'stdin', function(data){
-              child.stdin.write( data );
-            });
-          }
+        })
+      .then( function(child) {
+        if (typeof child === 'undefined') {
+          o.next(o);
+          return;
+        }
+        
+        child.on( 'error', function(error) {
+          console.log( error );
+        });
 
-          child.once( 'exit', function(code, signal) {
-            controller.emit( 'exit', { 
-                code: code, 
-                signal: signal
-              });
+        if (child.stdin) {
+          o.controller.on( 'stdin', function(data){
+            child.stdin.write( data );
           });
+        }
 
-          o.controller.once( 'kill', function() {
-            child.kill();
-          }); 
-        }); 
+        if (child.stdout) {
+          child.stdout.on( 'data', function(data) {
+            o.controller.emit( 'stdout', data );
+          });
+        }
+
+        if (child.stderr) {
+          child.stderr.on( 'data', function(data) {
+            o.controller.emit( 'stderr', data );
+          });
+        }
+
+        child.once( 'exit', function(code, signal) {
+          o.controller.emit( 'exit', { code: code, signal: signal } );
+          o.next(o);
+        });
+
+        o.controller.once( 'kill', function() {
+          child.kill();
+        });
+
+      })
+      .catch(function(error) {
+        o.next(o);
+      });
     }
     else {
       o.next(o);
-    }
-  };
-
-  function pause(stream) {
-    if (typeof stream !== 'undefined') {
-      stream.pause(); 
-      stream.setRawMode( false );
-    }
-  }
-
-  function resume(stream) {
-    if (typeof stream !== 'undefined') {
-      stream.resume(); 
-      stream.setRawMode( true );
     }
   }
 }

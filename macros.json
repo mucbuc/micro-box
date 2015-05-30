@@ -1,7 +1,10 @@
 [
 	"git branch",
 	"git branch -v",
+	"git checkout master",
 	"git diff",
 	"git fetch origin",
+	"git log",
+	"git reset --hard",
 	"git status"
 ]

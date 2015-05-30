@@ -30,6 +30,19 @@ function Console() {
 
   read();
 
+  controller.on( 'stdout', function(data) {
+    process.stdout.write( data ); 
+  }); 
+
+  controller.on( 'stderr', function(data) {
+    process.stderr.write( data );
+  }); 
+
+  controller.on( 'exit', function() {
+    process.stdin.resume(); 
+    process.stdin.setRawMode( true );
+  });
+
   function read(req, res) {
     var base = process.cwd() + '> ';
     rl.setPrompt( base );
