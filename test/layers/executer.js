@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* I think these test are obsolete, covered by mulepack now */
+
 var assert = require( 'assert' )
   , Executer = require( '../../layers/executer' )
   , path = require( 'path' )
@@ -59,35 +61,6 @@ suite( 'executer', function() {
     executer.handle( context );
   });
 
-  test( 'checkKill', function(done) {
-    var context = dummyContext(done);
-
-    context.next = function() {
-      context.controller.emit('kill');
-    };
-
-    expector.expect( 'kill' );
-    expector.expect( 'exit' );
-
-    expector.on( 'exit', function() {
-      process.nextTick( done );
-    });
-
-    executer.handle( context );
-  });
-
-  test( 'checkIn', function(done) {
-    var context = dummyContext(done); 
-
-    context.next = function() {
-      expector.emit( 'stdin', 'a\n' );
-      process.nextTick( done );
-    };  
-    
-    expector.expect( 'stdin' );
-    executer.handle( context );
-  });
-  
   function defaultContext(done) {
     return {
       controller: expector,
