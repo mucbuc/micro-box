@@ -8,76 +8,45 @@ var assert = require( 'assert' )
   , stream = require( 'stream' )
   , cp = require( 'child_process' )
   , events = require( 'events' )
-  , Expector = require( 'expector' ).Expector;
+  , Expector = require( 'expector' ).Expector
+  , test = require( 'tape' ); 
 
 assert( typeof Executer === 'function' );
 
-suite( 'executer', function() {
+test( 'checkError', function(t) {
 
-  var executer
-    , expector;
+  var executer = new Executer();
+  var expector = new Expector(t);
+  var context = defaultContext( expector ); 
+  context.exec = [['cat', 'doesNotExist.txt']];
+  context.cwd = __dirname;
 
-  setup(function() {
-    executer = new Executer();
-    expector = new Expector();
-  });
+  expector.expectNot( 'stdout' );
+  expector.expect( 'exit', { code: 1, signal: null } );
+  expector.expect( 'stderr' );
 
-  teardown(function() {
-    expector.check();
-  });
-
-  test( 'checkError', function(done) {
-      
-    var context = defaultContext(done); 
-    context.exec = [['cat', 'doesNotExist.txt']];
-    context.cwd = __dirname;
-
-    context.next = function() {}
-    expector.on( 'exit', function() {
-      process.nextTick( done );
-    });
-
-    expector.expectNot( 'stdout' );
-    expector.expect( 'exit', { code: 1, signal: null } );
-    expector.expect( 'stderr' );
-
-    executer.handle( context );
-  });
-
-  test( 'checkOut', function(done) {
-    
-    var context = defaultContext(done);
-
-    context.exec = [['ls']];
-    context.cwd = path.join( __dirname, '../sample' );
-    
-    context.next = function() {}
-    expector.on( 'exit', function() {
-      process.nextTick( done );
-    });
-
-    expector.expectNot( 'stderr' );
-    expector.expect( 'stdout', new Buffer( 'test_dummy.txt\n' ) );
-    executer.handle( context );
-  });
-
-  function defaultContext(done) {
-    return {
-      controller: expector,
-      stdout: 'pipe',
-      stdin: 'pipe',
-      next: function(o) {
-        done();
-      }
-    };
-  }
-
-  function dummyContext(done) {
-    var result = defaultContext(done);
-    result.exec = [['dummy_read']];
-    result.env = process.env;
-    result.env.PATH += ':' + path.join(__dirname, '../bin');
-    return result;
-  }
-
+  executer.handle( context );
 });
+
+test( 'checkOut', function(t) {
+  var executer = new Executer();
+  var expector = new Expector(t);
+  var context = defaultContext( expector );
+  context.exec = [['ls']];
+  context.cwd = path.join( __dirname, '../sample' );
+  
+  expector.expectNot( 'stderr' );
+  expector.expect( 'stdout', new Buffer( 'test_dummy.txt\n' ) );
+  executer.handle( context );
+});
+
+function defaultContext(expector) {
+  return {
+    controller: expector,
+    stdout: 'pipe',
+    stdin: 'pipe',
+    next: function() {
+      expector.check();
+    }
+  };
+}
