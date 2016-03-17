@@ -8,7 +8,7 @@ var assert = require( 'assert' )
 
 assert( typeof mule !== 'undefined' );
 
-function Executer() {
+function Executor() {
 
   this.handle = function(o) {
 
@@ -70,4 +70,4 @@ function Executer() {
   }
 }
 
-module.exports = Executer;
+module.exports = Executor;
