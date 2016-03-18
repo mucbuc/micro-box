@@ -12,12 +12,12 @@
     "mulepack": "*"
   },
   "devDependencies": {
-    "mocha": "*",
+    "tape": "*",
     "expector": "*",
     "chai": "*"
   },
   "scripts": {
-    "test": "mocha -u tdd --recursive"
+    "test": "tape test/layers/executor.js"
   },
   "repository": {
     "type": "git",
