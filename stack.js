@@ -2,7 +2,7 @@ var assert = require( 'assert' )
   , FlowStack = require( 'flow-troll' )
   , cdAgent = require( 'cd-agent' )  
   , NRepeater = require( './layers/nrepeater.js' )
-  , Executer = require( './layers/executer.js' )
+  , Executor = require( './layers/executor.js' )
   , Filter = require( './layers/filter.js' )
   , Splitter = require( './layers/splitter.js' )
   , CWDManger = require( './layers/cwd.js' )
@@ -13,7 +13,7 @@ var assert = require( 'assert' )
 function Stack(controller) {
   var app = new FlowStack()
     , nRepeater = new NRepeater()
-    , executer = new Executer()
+    , executor = new Executor()
     , filter = new Filter()
     , splitter = new Splitter()
     , cwdManger = new CWDManger()
@@ -34,7 +34,7 @@ function Stack(controller) {
     o.stdout = process.stdout;
     o.next(o);
   });
-
+  
   app.use( splitter.handle );
   app.use( filter.handle );
   app.use( /cd\s*.*/, cwdManger.changeDir );
@@ -48,16 +48,17 @@ function Stack(controller) {
     o.next(); 
   });
 
-  app.use( executer.handle );
+  app.use( executor.handle );
 
   app.use( function(o) {
     process.stdin.resume(); 
     process.stdin.setRawMode( true ); 
+    process.stdout.write( process.cwd() ); 
     o.next(); 
   });
 
   // make macros out of all succesfull git commands
-  app.use( /git*/, macromaker.handle );
+  //app.use( /git*/, macromaker.handle );
 }
 
 module.exports = Stack; 

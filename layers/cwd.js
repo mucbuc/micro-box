@@ -1,13 +1,17 @@
-var cdAgent = require( 'cd-agent' ); 
+var assert = require( 'assert' )
+  , cdAgent = require( 'cd-agent' ); 
   
 function CWDManager() {
 
   this.changeDir = function(o) {
+    assert( typeof o !== 'undefined' );
+
     cdAgent({ 
         argv: o.argv,
         cwd: process.cwd()
       }, 
       function(cwd, list) {
+
         delete o.argv;
         
         if (typeof cwd !== 'undefined') {

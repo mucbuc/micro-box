@@ -3,7 +3,7 @@
 /* I think these test are obsolete, covered by mulepack now */
 
 var assert = require( 'assert' )
-  , Executer = require( '../../layers/executer' )
+  , Executor = require( '../../layers/executor' )
   , path = require( 'path' )
   , stream = require( 'stream' )
   , cp = require( 'child_process' )
@@ -11,11 +11,11 @@ var assert = require( 'assert' )
   , Expector = require( 'expector' ).Expector
   , test = require( 'tape' ); 
 
-assert( typeof Executer === 'function' );
+assert( typeof Executor === 'function' );
 
 test( 'checkError', function(t) {
 
-  var executer = new Executer();
+  var executor = new Executor();
   var expector = new Expector(t);
   var context = defaultContext( expector ); 
   context.exec = [['cat', 'doesNotExist.txt']];
@@ -25,11 +25,11 @@ test( 'checkError', function(t) {
   expector.expect( 'exit', { code: 1, signal: null } );
   expector.expect( 'stderr' );
 
-  executer.handle( context );
+  executor.handle( context );
 });
 
 test( 'checkOut', function(t) {
-  var executer = new Executer();
+  var executor = new Executor();
   var expector = new Expector(t);
   var context = defaultContext( expector );
   context.exec = [['ls']];
@@ -37,7 +37,7 @@ test( 'checkOut', function(t) {
   
   expector.expectNot( 'stderr' );
   expector.expect( 'stdout', new Buffer( 'test_dummy.txt\n' ) );
-  executer.handle( context );
+  executor.handle( context );
 });
 
 function defaultContext(expector) {
