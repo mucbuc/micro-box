@@ -1,4 +1,6 @@
-var assert = require( 'assert' )
+'use strict'; 
+
+let assert = require( 'assert' )
   , fs = require( 'fs' );
 
 function Tracker() {
@@ -8,7 +10,7 @@ function Tracker() {
     
     if (!o.code) {
       fs.readFile( './macros.json', function(err, data) {
-        var macros
+        let macros
           , unique = [];
         if (err) throw err;
         macros = JSON.parse(data.toString());
@@ -22,7 +24,7 @@ function Tracker() {
           }
 
           if (index == array.length - 1) {
-            var outStream = fs.createWriteStream( './macros.json' );
+            let outStream = fs.createWriteStream( './macros.json' );
             outStream.write(JSON.stringify(unique, null, '\t'))
             outStream.end();
           }

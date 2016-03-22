@@ -1,4 +1,6 @@
-var assert = require( 'assert' )
+'use strict';
+
+let assert = require( 'assert' )
   , cp = require( 'child_process' );
 
 function Combiner() {
@@ -6,9 +8,9 @@ function Combiner() {
 	if (o.hasOwnProperty('argv')) {
 		assert(Array.isArray(o.argv));
 
-		var index = findNextPipe( o.argv );
+		let index = findNextPipe( o.argv );
 		if (index != -1) {
-			var argv = o.argv; 
+			let argv = o.argv; 
 			o.exec = [];
 
 			while (index != -1) {

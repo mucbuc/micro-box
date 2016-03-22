@@ -1,4 +1,6 @@
-var assert = require( 'assert' )
+'use strict';
+
+let assert = require( 'assert' )
   , cdAgent = require( 'cd-agent' ); 
   
 function CWDManager() {
@@ -10,7 +12,7 @@ function CWDManager() {
         argv: o.argv,
         cwd: process.cwd()
       }, 
-      function(cwd, list) {
+      (cwd, list) => {
 
         delete o.argv;
         
