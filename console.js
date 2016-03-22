@@ -25,7 +25,7 @@ function Console() {
   });
 
   rl.on( 'line', function(cmd) {
-    stack.request( repeat + cmd, read );
+    stack.request( repeat + cmd, read ); 
   });
 
   read();

@@ -34,7 +34,7 @@ function Stack(controller) {
     o.stdout = process.stdout;
     o.next(o);
   });
-
+  
   app.use( splitter.handle );
   app.use( filter.handle );
   app.use( /cd\s*.*/, cwdManger.changeDir );
@@ -53,11 +53,12 @@ function Stack(controller) {
   app.use( function(o) {
     process.stdin.resume(); 
     process.stdin.setRawMode( true ); 
+    process.stdout.write( process.cwd() ); 
     o.next(); 
   });
 
   // make macros out of all succesfull git commands
-  app.use( /git*/, macromaker.handle );
+  //app.use( /git*/, macromaker.handle );
 }
 
 module.exports = Stack; 
