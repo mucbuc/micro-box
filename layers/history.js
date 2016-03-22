@@ -11,7 +11,6 @@ function Tracker() {
   this.handle = function(o) {
     assert( o.input !== 'undefined' );
     output.write( o.output + '\n' );
-	console.log( 'onextHistory' );
 	o.next();	
   };
 }

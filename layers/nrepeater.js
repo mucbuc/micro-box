@@ -12,7 +12,6 @@ function NRepeater() {
       }
     }
     previous = o.input;
-    console.log( 'onextREP' );
     o.next();
 
     function findDiff(lhs, rhs) {
