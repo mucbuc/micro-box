@@ -1,4 +1,6 @@
-var assert = require( 'assert' )
+'use strict';
+
+let assert = require( 'assert' )
   , cp = require( 'child_process' )
   , tmp = require( 'tmp' )
   , fs = require( 'fs' )
@@ -22,45 +24,45 @@ function Executor() {
           stdin: o.stdin, 
           cwd: o.cwd
         })
-      .then( function(child) {
+      .then( child => {
         if (typeof child === 'undefined') {
           o.next(o);
           return;
         }
         
-        child.on( 'error', function(error) {
+        child.on( 'error', (error) => {
           console.log( error );
         });
 
         if (child.stdin) {
-          o.controller.on( 'stdin', function(data){
+          o.controller.on( 'stdin', (data) => {
             child.stdin.write( data );
           });
         }
 
         if (child.stdout) {
-          child.stdout.on( 'data', function(data) {
+          child.stdout.on( 'data', (data) => {
             o.controller.emit( 'stdout', data );
           });
         }
 
         if (child.stderr) {
-          child.stderr.on( 'data', function(data) {
+          child.stderr.on( 'data', (data) => {
             o.controller.emit( 'stderr', data );
           });
         }
 
-        child.once( 'exit', function(code, signal) {
+        child.once( 'exit', (code, signal) => {
           o.controller.emit( 'exit', { code: code, signal: signal } );
           o.next(o);
         });
 
-        o.controller.once( 'kill', function() {
+        o.controller.once( 'kill', () => {
           child.kill();
         });
 
       })
-      .catch(function(error) {
+      .catch( (error) => {
         o.next(o);
       });
     }
