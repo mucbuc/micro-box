@@ -20,7 +20,7 @@ function Tracker() {
         .forEach( function(element, index, array) {
           if (  !index
             ||  element != array[index-1]) {
-            unique.push(element);
+            unique.push(element.trim());
           }
 
           if (index == array.length - 1) {
