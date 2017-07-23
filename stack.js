@@ -8,7 +8,10 @@ var assert = require( 'assert' )
   , CWDManger = require( './layers/cwd.js' )
   , Tracker = require( './layers/history.js' )
   , Combiner = require( './layers/combiner.js' )
-  , MacroMaker = require( './layers/macromaker.js' );
+  , MacroMaker = require( './layers/macromaker.js' )
+  , config = require( './config.json' );
+
+assert( typeof config !== 'undefined' );
 
 function Stack(controller) {
   var app = new FlowStack()
@@ -57,8 +60,9 @@ function Stack(controller) {
     o.next(); 
   });
 
-  // make macros out of all succesfull git commands
-  //app.use( /git*/, macromaker.handle );
+  if (config.hasOwnProperty('makeMacro')) {
+    app.use( new RegExp( config.makeMacro ), macromaker.handle );
+  }
 }
 
 module.exports = Stack; 

@@ -19,9 +19,10 @@ function Executor() {
       mule( 
         o.exec, 
         { 
-          stdout: o.stdout,
+          /*stdout: o.stdout,
           stderr: o.stderr,
-          stdin: o.stdin, 
+          stdin: o.stdin, */
+          stdio: 'pipe',
           cwd: o.cwd
         })
       .then( child => {
