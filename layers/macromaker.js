@@ -18,11 +18,10 @@ function Tracker() {
         macros
         .sort()
         .forEach( function(element, index, array) {
-          if (  !index
-            ||  element != array[index-1]) {
-            unique.push(element.trim());
+          if (unique.indexOf(element.trim()) === -1) {
+            unique.push(element);
           }
-
+        
           if (index == array.length - 1) {
             let outStream = fs.createWriteStream( './macros.json' );
             outStream.write(JSON.stringify(unique, null, '\t'))
