@@ -25,15 +25,18 @@ function Executor() {
           stdio: 'pipe',
           cwd: o.cwd
         })
-      .then( child => {
+      .then( childFactory => {
+	let child = childFactory();
         if (typeof child === 'undefined') {
           o.next(o);
           return;
         }
         
         child.on( 'error', (error) => {
-          console.log( error );
-        });
+            console.error( error );
+      	    o.controller.emit( 'exit', { code: 1, signal: 'SIGHUP' } );
+            o.cancel();
+      	});
 
         if (child.stdin) {
           o.controller.on( 'stdin', (data) => {

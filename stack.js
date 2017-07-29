@@ -56,7 +56,7 @@ function Stack(controller) {
   app.use( function(o) {
     process.stdin.resume(); 
     process.stdin.setRawMode( true ); 
-    process.stdout.write( process.cwd() ); 
+    process.stdout.write( process.cwd() );
     o.next(); 
   });
 
