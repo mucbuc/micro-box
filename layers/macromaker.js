@@ -1,7 +1,8 @@
 'use strict'; 
 
 let assert = require( 'assert' )
-  , fs = require( 'fs' );
+  , fs = require( 'fs' )
+  , path = require( 'path' );
 
 function Tracker() {
 
@@ -9,7 +10,7 @@ function Tracker() {
     assert( o.input !== 'undefined' );
     
     if (!o.code) {
-      fs.readFile( './macros.json', function(err, data) {
+      fs.readFile( path.join( __dirname, '..', 'macros.json' ), function(err, data) {
         let macros
           , unique = [];
         if (err) throw err;

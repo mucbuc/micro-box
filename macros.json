@@ -1,5 +1,6 @@
 [
 	"cat macros.json",
+	"cd micro-box",
 	"git add",
 	"git branch",
 	"git branch -v",
@@ -27,9 +28,15 @@
 	"ls",
 	"ls -la",
 	"ls -lh",
+	"ls ../context",
+	"ls /Users/markymark/Desktop",
 	"ls node_modules",
+	"ls | less",
+	"ls ~/Desktop",
 	"npm test",
 	"rake build",
 	"rake translate",
+	"sublime",
+	"sublime .",
 	"sublime layers/macromaker.js"
 ]
